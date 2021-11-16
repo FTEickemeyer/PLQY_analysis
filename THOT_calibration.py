@@ -6,14 +6,6 @@
 # _by Felix Eickemeyer_
 # 
 # Calibration of raw data.
-# Based on calibrate 1.2.0.ipynb
-# 
-# _Version 21.07.2021 in Python 3_
-# 
-# _Change log:_  
-# 1.1.0: My package used  
-# 
-# 
 
 # In[1]:
 
@@ -44,7 +36,7 @@ pass
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = r'PLQY_results\PLQY' )
+db = ThotProject( dev_root = '../shuai/PLQY' )
 
 
 # In[3]:
@@ -73,7 +65,7 @@ lampspec_graph = lampspec.plot(yscale = 'log', return_fig = True, show_plot = Fa
 lqy.add_graph(db, 'lampspec.png', lampspec_graph)
 
 
-# In[5]:
+# In[7]:
 
 
 # Load measured calibration spectra
@@ -84,8 +76,9 @@ rawcalib = db.find_assets({'type' : 'raw calibration'})
 #print(rawcalib[1].metadata)
 sa = []
 for i, asset in enumerate(rawcalib):
-    fp = asset.file
-    #print(fp)
+    print( asset.name, asset.file )
+    fp = os.path.normpath( asset.file.replace( '\\', '/' ) )
+    print( '\n', fp )
     fn = os.path.basename(fp)
     directory = os.path.dirname(fp)
     acc = asset.metadata['acc']

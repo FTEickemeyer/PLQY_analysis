@@ -13,12 +13,13 @@
 # _Change log:_  
 # 
 
-# In[1]:
+# In[9]:
 
 
 import os
 from os import getcwd, listdir
 import pandas as pd
+import matplotlib.pyplot as plt
 import thot
 from thot import ThotProject
 from importlib import reload
@@ -33,14 +34,14 @@ reload(lqy)
 pass
 
 
-# In[2]:
+# In[4]:
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = r'PLQY_results' )
+db = ThotProject( dev_root = '../shuai' )
 
 
-# In[3]:
+# In[5]:
 
 
 samples = db.find_assets({'type' : 'absolute PL spectrum'})
@@ -48,13 +49,13 @@ for idx, sample in enumerate(samples):
     print(f'{idx:2}: {sample.name}')    
 
 
-# In[4]:
+# In[20]:
 
 
 #Select samples and change order
-do_this_step = False
+do_this_step = True
 if do_this_step:
-    order = [6, 7, 4, 5, 0, 1, 2, 3]
+    order = [ 2, 0, 5, 3, 1, 4]
     samples_new = [samples[order[idx]] for idx in range(len(order))]
     for idx, sample in enumerate(samples_new):
         print(f'{idx:2}: {sample.name}')
@@ -63,7 +64,7 @@ else:
     samples_new = samples
 
 
-# In[5]:
+# In[21]:
 
 
 samples = samples_new
@@ -75,7 +76,7 @@ for idx, sample in enumerate(samples):
     print(f'{idx:2}: {sample.name}')
 
 
-# In[6]:
+# In[22]:
 
 
 allPL = spc.PEL_spectra(sa)
@@ -92,10 +93,10 @@ allPL.sa[0].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '
 
 all_graph = allPL.plot(bottom = 0, plotstyle = 'individual', return_fig = True, show_plot = False)
 lqy.add_graph(db, 'all_abolute_PL_spectra.png', all_graph)
-del all_graph
+# plt.close( all_graph )
 
 
-# In[7]:
+# In[23]:
 
 
 names = []
@@ -124,7 +125,7 @@ for sample in samples:
     fs_absint_fac_arr.append(sm['fs_absint_factor'])    
 
 
-# In[8]:
+# In[24]:
 
 
 # Save PLQY data

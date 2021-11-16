@@ -26,18 +26,17 @@ from importlib import reload
 
 from FTE_analysis_libraries import PLQY as lqy
 reload(lqy)
-pass
 
 
 # In[2]:
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = r'PLQY_results\PLQY' )
+db = ThotProject( dev_root = '../shuai/PLQY' )
 root = db.find_container(dict(_id = db.root))
 
 
-# In[3]:
+# In[27]:
 
 
 # Generate new sample and calibration assets with metadata
