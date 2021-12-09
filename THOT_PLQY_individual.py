@@ -17,7 +17,7 @@
 # 1.1.0: All graphs saved as assets  
 # 1.2.0: Experminetal parameters as own class (exp_param)   
 
-# In[55]:
+# In[ ]:
 
 
 import os
@@ -36,7 +36,25 @@ reload(lqy)
 pass
 
 
-# In[56]:
+# In[2]:
+
+
+#Perovskite
+#which_sample = 'Haizhou-FAPbI3'
+which_sample = 'FAPbI3'
+
+#DSC
+#which_sample = 'Yameng DSC'
+#which_sample = 'dye on TiO2'
+#which_sample = 'dye on Al2O3'
+#which_sample = 'Coumarin 153'
+#which_sample = 'MS5'
+#which_sample = 'XY1b'
+
+param = lqy.exp_param(which_sample = which_sample, excitation_laser = None, PL_left = None, PL_right = None, PL_peak = None, corr_offs_left = 40, corr_offs_right = 50, PL_peak_auto = False, eval_Pb = False)
+
+
+# In[ ]:
 
 
 # Initializes Thot project
@@ -71,7 +89,7 @@ else:
 param = lqy.exp_param(which_sample = which_sample, excitation_laser = None, PL_left = None, PL_right = None, PL_peak = None, corr_offs_left = 40, corr_offs_right = 50, PL_peak_auto = False, eval_Pb = False)
 
 
-# In[59]:
+# In[ ]:
 
 
 samples = db.find_assets({'type' : 'calibrated PL spectrum'})
@@ -80,14 +98,14 @@ names.remove('no sample')
 names
 
 
-# In[60]:
+# In[ ]:
 
 
 La = lqy.find({'metadata.name' : 'no sample', 'metadata.em_filter' : param.laser_marker}, samples, show_details = True)
 Pa = lqy.find({'metadata.name' : 'no sample', 'metadata.em_filter' : param.PL_marker}, samples, show_details = True)
 
 
-# In[61]:
+# In[ ]:
 
 
 for idx in range(len(names)):

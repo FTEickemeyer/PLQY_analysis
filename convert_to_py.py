@@ -9,10 +9,8 @@ import os.path
 import time
 
 os.system('jupyter nbconvert --to script *.ipynb')
-#time.sleep(10)
 
 fns = os.listdir(os.getcwd())
-
 for fn in fns:
     extension = os.path.splitext(fn)[1]
     #print(extension)

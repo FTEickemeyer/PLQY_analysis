@@ -6,6 +6,17 @@
 # _by Felix Eickemeyer_
 # 
 # Calibration of raw data.
+<<<<<<< HEAD
+=======
+# Based on calibrate 1.2.0.ipynb
+# 
+# _Version 21.07.2021 in Python 3_
+# 
+# _Change log:_  
+# 1.1.0: My package used  
+# 
+# 
+>>>>>>> main
 
 # In[1]:
 
@@ -36,7 +47,11 @@ pass
 
 
 # Initializes Thot project
+<<<<<<< HEAD
 db = ThotProject( dev_root = '../shuai/PLQY' )
+=======
+db = ThotProject( dev_root = r'PLQY_results\PLQY' )
+>>>>>>> main
 
 
 # In[3]:
@@ -65,7 +80,11 @@ lampspec_graph = lampspec.plot(yscale = 'log', return_fig = True, show_plot = Fa
 lqy.add_graph(db, 'lampspec.png', lampspec_graph)
 
 
+<<<<<<< HEAD
 # In[7]:
+=======
+# In[5]:
+>>>>>>> main
 
 
 # Load measured calibration spectra
@@ -76,9 +95,14 @@ rawcalib = db.find_assets({'type' : 'raw calibration'})
 #print(rawcalib[1].metadata)
 sa = []
 for i, asset in enumerate(rawcalib):
+<<<<<<< HEAD
     print( asset.name, asset.file )
     fp = os.path.normpath( asset.file.replace( '\\', '/' ) )
     print( '\n', fp )
+=======
+    fp = asset.file
+    #print(fp)
+>>>>>>> main
     fn = os.path.basename(fp)
     directory = os.path.dirname(fp)
     acc = asset.metadata['acc']
@@ -197,7 +221,11 @@ for idx, sp in enumerate(PLspectra_nm.sa):
     asset_prop = dict(name = f'{idx}_{name}_calibrated PL spectrum.csv', type = 'calibrated PL spectrum', metadata = metadata)
     TFN = db.add_asset(asset_prop)
     fn = os.path.basename(TFN)
+<<<<<<< HEAD
     #print(fn)
+=======
+    print(f'{idx: 3}: {fn}') 
+>>>>>>> main
     directory = os.path.dirname(TFN)
     sp.save(directory, fn, check_existing = False)
 

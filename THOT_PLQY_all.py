@@ -13,13 +13,14 @@
 # _Change log:_  
 # 
 
-# In[9]:
+# In[ ]:
 
 
 import os
 from os import getcwd, listdir
 import pandas as pd
 import matplotlib.pyplot as plt
+
 import thot
 from thot import ThotProject
 from importlib import reload
@@ -34,14 +35,14 @@ reload(lqy)
 pass
 
 
-# In[4]:
+# In[ ]:
 
 
 # Initializes Thot project
 db = ThotProject( dev_root = '../shuai' )
 
 
-# In[5]:
+# In[ ]:
 
 
 samples = db.find_assets({'type' : 'absolute PL spectrum'})
@@ -49,7 +50,7 @@ for idx, sample in enumerate(samples):
     print(f'{idx:2}: {sample.name}')    
 
 
-# In[20]:
+# In[ ]:
 
 
 #Select samples and change order
@@ -64,7 +65,7 @@ else:
     samples_new = samples
 
 
-# In[21]:
+# In[ ]:
 
 
 samples = samples_new
@@ -76,16 +77,19 @@ for idx, sample in enumerate(samples):
     print(f'{idx:2}: {sample.name}')
 
 
-# In[22]:
+# In[ ]:
 
 
 allPL = spc.PEL_spectra(sa)
 allPL.names_to_label()
 
-allPL.sa[0].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
-#allPL.sa[1].plotstyle = dict(color = colors[0], linewidth = 5, linestyle = '-')
-#allPL.sa[2].plotstyle = dict(color = colors[1], linewidth = 5, linestyle = '-')
-#allPL.sa[3].plotstyle = dict(color = colors[1], linewidth = 5, linestyle = '-')
+
+for idx in range(len(samples)):
+    allPL.sa[idx].plotstyle = dict(color = gen.colors[idx], linewidth = 5, linestyle = '-')
+#allPL.sa[0].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
+#allPL.sa[1].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
+#allPL.sa[2].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
+#allPL.sa[3].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
 #allPL.sa[4].plotstyle = dict(color = colors[2], linewidth = 5, linestyle = '-')
 #allPL.sa[5].plotstyle = dict(color = colors[2], linewidth = 5, linestyle = '-')
 #allPL.sa[6].plotstyle = dict(color = colors[3], linewidth = 5, linestyle = '-')
@@ -93,10 +97,11 @@ allPL.sa[0].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '
 
 all_graph = allPL.plot(bottom = 0, plotstyle = 'individual', return_fig = True, show_plot = False)
 lqy.add_graph(db, 'all_abolute_PL_spectra.png', all_graph)
+
 # plt.close( all_graph )
 
 
-# In[23]:
+# In[ ]:
 
 
 names = []
@@ -125,7 +130,7 @@ for sample in samples:
     fs_absint_fac_arr.append(sm['fs_absint_factor'])    
 
 
-# In[24]:
+# In[ ]:
 
 
 # Save PLQY data
