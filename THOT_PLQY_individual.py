@@ -5,19 +5,11 @@
 # 
 # _by Felix Eickemeyer_
 # 
-# PLQY, this notebook is based on "PLQY 1.3.4.ipynb".
+# PLQY
+# 
 # Calibration and correction has to be done before.
-# __
-# 
-# _Version 10.11.2021 in Python 3_
-# 
-# _Change log:_  
-# 0.1.0: My package used  
-# 1.0.0: First version bug free and usable for thot desktop  
-# 1.1.0: All graphs saved as assets  
-# 1.2.0: Experminetal parameters as own class (exp_param)   
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -30,10 +22,6 @@ from importlib import reload
 from FTE_analysis_libraries import PLQY as lqy
 from FTE_analysis_libraries import Spectrum as spc
 from FTE_analysis_libraries.General import f1240, Vsq, V_loss, QFLS
-
-reload(spc)
-reload(lqy)
-pass
 
 
 # In[2]:
@@ -51,26 +39,31 @@ which_sample = 'FAPbI3'
 #which_sample = 'MS5'
 #which_sample = 'XY1b'
 
-param = lqy.exp_param(which_sample = which_sample, excitation_laser = None, PL_left = None, PL_right = None, PL_peak = None, corr_offs_left = 40, corr_offs_right = 50, PL_peak_auto = False, eval_Pb = False)
+param = lqy.exp_param(
+    which_sample = which_sample,
+    excitation_laser = None,
+    PL_left = None,
+    PL_right = None,
+    PL_peak = None,
+    corr_offs_left = 40,
+    corr_offs_right = 50,
+    PL_peak_auto = False,
+    eval_Pb = False
+)
 
 
-# In[ ]:
+# In[10]:
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = '../double_perovskite_temperature' )
-
-
-# In[57]:
-
-
+db = ThotProject( dev_root = '../hong-sn' )
 root = db.find_container( { '_id': db.root } )
 
 
-# In[58]:
+# In[11]:
 
 
-#Perovskite
+# Perovskite
 if 'sample_type' in root.metadata:
     which_sample = root.metadata[ 'sample_type' ]
 
@@ -89,27 +82,48 @@ else:
 param = lqy.exp_param(which_sample = which_sample, excitation_laser = None, PL_left = None, PL_right = None, PL_peak = None, corr_offs_left = 40, corr_offs_right = 50, PL_peak_auto = False, eval_Pb = False)
 
 
-# In[ ]:
+# In[12]:
 
 
 samples = db.find_assets({'type' : 'calibrated PL spectrum'})
 names = list({sample.metadata['name'] for sample in samples})
 names.remove('no sample')
-names
+if 'exclude' in root.metadata:
+    for exc in root.metadata[ 'exclude' ]:
+        names.remove(exc)
+
+if db.dev_mode():
+    print( names )
 
 
-# In[ ]:
+# In[15]:
 
 
-La = lqy.find({'metadata.name' : 'no sample', 'metadata.em_filter' : param.laser_marker}, samples, show_details = True)
-Pa = lqy.find({'metadata.name' : 'no sample', 'metadata.em_filter' : param.PL_marker}, samples, show_details = True)
+La = lqy.find(
+    {
+        'metadata.name' : 'no sample',
+        'metadata.em_filter' : param.laser_marker
+    }, 
+    samples, 
+    show_details = ( True and db.dev_mode() )
+)
+
+Pa = lqy.find(
+    {
+        'metadata.name' : 'no sample',
+        'metadata.em_filter' : param.PL_marker
+    },
+    samples,
+    show_details = ( True and db.dev_mode() )
+)
 
 
-# In[ ]:
+# In[14]:
 
 
 for idx in range(len(names)):
-    show_details = True
+    show_details = True and db.dev_mode()
+    
     sample_name = names[idx]
     group = thot.filter({'metadata.name' : sample_name}, samples)
     Lb = lqy.find({'metadata.em_filter' : param.laser_marker, 'metadata.inboob' : 'outofbeam'}, group, show_details = show_details)
@@ -118,7 +132,7 @@ for idx in range(len(names)):
     Pc = lqy.find({'metadata.em_filter' : param.PL_marker, 'metadata.inboob' : 'inbeam'}, group, show_details = show_details)
     fs = lqy.find({'metadata.em_filter' : param.PL_marker, 'metadata.fsip' : 'fs'}, group, show_details = show_details)
 
-    show_details = True
+    show_details = True and db.dev_mode()
 
     sPL = lqy.PLQY_dataset(db, La, Lb, Lc, Pa, Pb, Pc, fs, sample_name, param)
     #sPL.fs.plot(yscale = 'linear', title = sPL.fs_asset.metadata['orig_fn'])
