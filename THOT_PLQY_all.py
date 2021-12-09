@@ -13,7 +13,7 @@
 # _Change log:_  
 # 
 
-# In[1]:
+# In[7]:
 
 
 import os
@@ -33,14 +33,14 @@ reload(lqy)
 pass
 
 
-# In[2]:
+# In[8]:
 
 
 # Initializes Thot project
 db = ThotProject( dev_root = r'PLQY_results' )
 
 
-# In[3]:
+# In[9]:
 
 
 samples = db.find_assets({'type' : 'absolute PL spectrum'})
@@ -48,13 +48,14 @@ for idx, sample in enumerate(samples):
     print(f'{idx:2}: {sample.name}')    
 
 
-# In[4]:
+# In[10]:
 
 
 #Select samples and change order
-do_this_step = False
+do_this_step = True
 if do_this_step:
-    order = [6, 7, 4, 5, 0, 1, 2, 3]
+    #order = [0, 1, 2, 3]
+    order = [idx for idx in range(len(samples)) if ('ETCHFTO' in samples[idx].name)]
     samples_new = [samples[order[idx]] for idx in range(len(order))]
     for idx, sample in enumerate(samples_new):
         print(f'{idx:2}: {sample.name}')
@@ -63,7 +64,7 @@ else:
     samples_new = samples
 
 
-# In[5]:
+# In[11]:
 
 
 samples = samples_new
@@ -75,16 +76,18 @@ for idx, sample in enumerate(samples):
     print(f'{idx:2}: {sample.name}')
 
 
-# In[6]:
+# In[16]:
 
 
 allPL = spc.PEL_spectra(sa)
 allPL.names_to_label()
 
-allPL.sa[0].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
-#allPL.sa[1].plotstyle = dict(color = colors[0], linewidth = 5, linestyle = '-')
-#allPL.sa[2].plotstyle = dict(color = colors[1], linewidth = 5, linestyle = '-')
-#allPL.sa[3].plotstyle = dict(color = colors[1], linewidth = 5, linestyle = '-')
+for idx in range(len(samples)):
+    allPL.sa[idx].plotstyle = dict(color = gen.colors[idx], linewidth = 5, linestyle = '-')
+#allPL.sa[0].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
+#allPL.sa[1].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
+#allPL.sa[2].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
+#allPL.sa[3].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
 #allPL.sa[4].plotstyle = dict(color = colors[2], linewidth = 5, linestyle = '-')
 #allPL.sa[5].plotstyle = dict(color = colors[2], linewidth = 5, linestyle = '-')
 #allPL.sa[6].plotstyle = dict(color = colors[3], linewidth = 5, linestyle = '-')

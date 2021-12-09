@@ -204,7 +204,7 @@ for idx, sp in enumerate(PLspectra_nm.sa):
     asset_prop = dict(name = f'{idx}_{name}_calibrated PL spectrum.csv', type = 'calibrated PL spectrum', metadata = metadata)
     TFN = db.add_asset(asset_prop)
     fn = os.path.basename(TFN)
-    #print(fn)
+    print(f'{idx: 3}: {fn}') 
     directory = os.path.dirname(TFN)
     sp.save(directory, fn, check_existing = False)
 

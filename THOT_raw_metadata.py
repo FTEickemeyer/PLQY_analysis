@@ -15,7 +15,7 @@
 # 
 # 
 
-# In[1]:
+# In[4]:
 
 
 import os
@@ -29,7 +29,7 @@ reload(lqy)
 pass
 
 
-# In[2]:
+# In[5]:
 
 
 # Initializes Thot project
@@ -37,7 +37,7 @@ db = ThotProject( dev_root = r'PLQY_results\PLQY' )
 root = db.find_container(dict(_id = db.root))
 
 
-# In[3]:
+# In[6]:
 
 
 # Generate new sample and calibration assets with metadata
@@ -45,7 +45,7 @@ asset_type = ''
 container_ids = root.children
 for container_id in container_ids:
     container = db.find_container( { '_id' : container_id} )
-    lqy.raw_to_asset_with_metadata(container, asset_type, db, show_FN = False, show_new_asset = False)
+    lqy.raw_to_asset_with_metadata(container, asset_type, db, show_FN = True, show_new_asset = False)
 
 
 # In[ ]:
