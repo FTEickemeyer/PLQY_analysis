@@ -31,10 +31,11 @@ from FTE_analysis_libraries import Spectrum as spc
 db = ThotProject( dev_root = '../hong-sn' )
 
 
-# In[3]:
+# In[7]:
 
 
 samples = db.find_assets({'type' : 'absolute PL spectrum'})
+samples.sort( key = lambda asset: asset.name.lower() )
 
 if db.dev_mode():
     for idx, sample in enumerate(samples):
@@ -44,7 +45,7 @@ if db.dev_mode():
 # In[4]:
 
 
-#S elect samples and change order
+# Select samples and change order
 do_this_step = False
 if do_this_step and db.dev_mode():
     order = [ 1, 2, 0 ]
@@ -79,14 +80,14 @@ allPL.names_to_label()
 
 for idx in range(len(samples)):
     allPL.sa[idx].plotstyle = dict(color = gen.colors[idx], linewidth = 5, linestyle = '-')
-#allPL.sa[0].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
-#allPL.sa[1].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
-#allPL.sa[2].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
-#allPL.sa[3].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
-#allPL.sa[4].plotstyle = dict(color = colors[2], linewidth = 5, linestyle = '-')
-#allPL.sa[5].plotstyle = dict(color = colors[2], linewidth = 5, linestyle = '-')
-#allPL.sa[6].plotstyle = dict(color = colors[3], linewidth = 5, linestyle = '-')
-#allPL.sa[7].plotstyle = dict(color = colors[3], linewidth = 5, linestyle = '-')
+# allPL.sa[0].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
+# allPL.sa[1].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
+# allPL.sa[2].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
+# allPL.sa[3].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
+# allPL.sa[4].plotstyle = dict(color = colors[2], linewidth = 5, linestyle = '-')
+# allPL.sa[5].plotstyle = dict(color = colors[2], linewidth = 5, linestyle = '-')
+# allPL.sa[6].plotstyle = dict(color = colors[3], linewidth = 5, linestyle = '-')
+# allPL.sa[7].plotstyle = dict(color = colors[3], linewidth = 5, linestyle = '-')
 
 all_graph = allPL.plot(bottom = 0, plotstyle = 'individual', return_fig = True, show_plot = False)
 lqy.add_graph(db, 'all_absolute_PL_spectra.png', all_graph)
@@ -133,8 +134,8 @@ if do_this_step or ( not db.dev_mode() ):
 
     directory = os.path.dirname(samples[0].file) 
     FN = 'PLQY.csv'
-    #if save_ok(join(directory, FN)):
-    #    df.to_csv(join(directory, FN), header = True, index = False)
+    # if save_ok(join(directory, FN)):
+    # df.to_csv(join(directory, FN), header = True, index = False)
         
     asset_prop = dict(name = 'csv_' + FN, type = 'csv', file = FN)
     asset_filepath = db.add_asset(asset_prop)
