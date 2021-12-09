@@ -27,17 +27,29 @@ from FTE_analysis_libraries.General import f1240, Vsq, V_loss, QFLS
 # In[2]:
 
 
-#Perovskite
-#which_sample = 'Haizhou-FAPbI3'
-which_sample = 'FAPbI3'
+# Initializes Thot project
+db = ThotProject( dev_root = '../hong-sn' )
+root = db.find_container( { '_id': db.root } )
 
-#DSC
-#which_sample = 'Yameng DSC'
-#which_sample = 'dye on TiO2'
-#which_sample = 'dye on Al2O3'
-#which_sample = 'Coumarin 153'
-#which_sample = 'MS5'
-#which_sample = 'XY1b'
+
+# In[3]:
+
+
+# Perovskite
+if 'sample_type' in root.metadata:
+    which_sample = root.metadata[ 'sample_type' ]
+
+else:
+    # default sample type
+    which_sample = 'FAPbI3'
+
+    #DSC
+    #which_sample = 'Yameng DSC'
+    #which_sample = 'dye on TiO2'
+    #which_sample = 'dye on Al2O3'
+    #which_sample = 'Coumarin 153'
+    #which_sample = 'MS5'
+    #which_sample = 'XY1b'
 
 param = lqy.exp_param(
     which_sample = which_sample,
@@ -52,37 +64,7 @@ param = lqy.exp_param(
 )
 
 
-# In[10]:
-
-
-# Initializes Thot project
-db = ThotProject( dev_root = '../hong-sn' )
-root = db.find_container( { '_id': db.root } )
-
-
-# In[11]:
-
-
-# Perovskite
-if 'sample_type' in root.metadata:
-    which_sample = root.metadata[ 'sample_type' ]
-
-else:
-    pass
-    #which_sample = 'FAPbI3'
-
-#DSC
-#which_sample = 'Yameng DSC'
-#which_sample = 'dye on TiO2'
-#which_sample = 'dye on Al2O3'
-#which_sample = 'Coumarin 153'
-#which_sample = 'MS5'
-#which_sample = 'XY1b'
-
-param = lqy.exp_param(which_sample = which_sample, excitation_laser = None, PL_left = None, PL_right = None, PL_peak = None, corr_offs_left = 40, corr_offs_right = 50, PL_peak_auto = False, eval_Pb = False)
-
-
-# In[12]:
+# In[4]:
 
 
 samples = db.find_assets({'type' : 'calibrated PL spectrum'})
@@ -96,7 +78,7 @@ if db.dev_mode():
     print( names )
 
 
-# In[15]:
+# In[5]:
 
 
 La = lqy.find(
@@ -118,13 +100,12 @@ Pa = lqy.find(
 )
 
 
-# In[14]:
+# In[6]:
 
 
-for idx in range(len(names)):
+for sample_name in names:
     show_details = True and db.dev_mode()
-    
-    sample_name = names[idx]
+    print( sample_name )
     group = thot.filter({'metadata.name' : sample_name}, samples)
     Lb = lqy.find({'metadata.em_filter' : param.laser_marker, 'metadata.inboob' : 'outofbeam'}, group, show_details = show_details)
     Lc = lqy.find({'metadata.em_filter' : param.laser_marker, 'metadata.inboob' : 'inbeam'}, group, show_details = show_details)

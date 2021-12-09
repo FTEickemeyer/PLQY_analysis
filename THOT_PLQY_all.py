@@ -31,7 +31,7 @@ from FTE_analysis_libraries import Spectrum as spc
 db = ThotProject( dev_root = '../hong-sn' )
 
 
-# In[21]:
+# In[3]:
 
 
 samples = db.find_assets({'type' : 'absolute PL spectrum'})
@@ -41,7 +41,7 @@ if db.dev_mode():
         print(f'{idx:2}: {sample.name}')    
 
 
-# In[15]:
+# In[4]:
 
 
 #S elect samples and change order
@@ -56,7 +56,7 @@ if do_this_step and db.dev_mode():
     do_this_step = False  # reset local do this step
 
 
-# In[16]:
+# In[5]:
 
 
 def load_spectrum(asset):
@@ -71,7 +71,7 @@ for idx, sample in enumerate(samples):
         print(f'{idx:2}: {sample.name}')
 
 
-# In[17]:
+# In[6]:
 
 
 allPL = spc.PEL_spectra(sa)
