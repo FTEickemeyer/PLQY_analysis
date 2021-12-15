@@ -28,7 +28,7 @@ from FTE_analysis_libraries.General import f1240, Vsq, V_loss, QFLS
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = '../hong-sn' )
+db = ThotProject( dev_root = 'PLQY_results' )
 root = db.find_container( { '_id': db.root } )
 
 
@@ -113,20 +113,20 @@ for sample_name in names:
     Pc = lqy.find({'metadata.em_filter' : param.PL_marker, 'metadata.inboob' : 'inbeam'}, group, show_details = show_details)
     fs = lqy.find({'metadata.em_filter' : param.PL_marker, 'metadata.fsip' : 'fs'}, group, show_details = show_details)
 
-    show_details = True and db.dev_mode()
+    save_plots = True
 
     sPL = lqy.PLQY_dataset(db, La, Lb, Lc, Pa, Pb, Pc, fs, sample_name, param)
     #sPL.fs.plot(yscale = 'linear', title = sPL.fs_asset.metadata['orig_fn'])
     #sPL.P.plot()
 
     sPL.find_PL_peak()
-    sPL.inb_adjust(adj_factor = None, show_adjust_factor = False, show = show_details)
-    sPL.calc_abs(what = 'inb', show_details = show_details)
+    sPL.inb_adjust(adj_factor = None, show_adjust_factor = False, save_plots = save_plots)
+    sPL.calc_abs(what = 'inb', save_plots = save_plots)
 
     #sPL.oob_adjust(adj_factor = None, show_adjust_factor = True, show = True)
     #sPL.calc_abs(what = 'oob', show_details = show_details)
 
-    sPL.calc_PLQY(show = show_details, show_lum = 'linear')
+    sPL.calc_PLQY(show = show_details, save_plots = save_plots, show_lum = 'linear')
 
     sPL.abs_pf_spec(nsuns = 1)
 
