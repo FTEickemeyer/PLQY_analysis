@@ -15,7 +15,7 @@
 # 
 # 
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -27,15 +27,15 @@ from importlib import reload
 from FTE_analysis_libraries import PLQY as lqy
 
 
-# In[ ]:
+# In[2]:
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = '../shuai/PLQY' )
+db = ThotProject( dev_root = '../double_perovskite_temperature_dependence/trial-06' )
 root = db.find_container(dict(_id = db.root))
 
 
-# In[ ]:
+# In[5]:
 
 
 # Generate new sample and calibration assets with metadata
@@ -43,11 +43,5 @@ asset_type = ''
 container_ids = root.children
 for container_id in container_ids:
     container = db.find_container( { '_id' : container_id} )
-    lqy.raw_to_asset_with_metadata(container, asset_type, db, show_FN = False, show_new_asset = False)
-
-
-# In[ ]:
-
-
-
+    lqy.raw_to_asset_with_metadata(container, asset_type, db, show_FN = True, show_new_asset = True)
 

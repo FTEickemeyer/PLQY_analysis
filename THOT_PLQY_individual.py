@@ -28,7 +28,7 @@ from FTE_analysis_libraries.General import f1240, Vsq, V_loss, QFLS
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = '../hong-sn' )
+db = ThotProject( dev_root = '../double_perovskite_temperature_dependence/trial-06' )
 root = db.find_container( { '_id': db.root } )
 
 
@@ -69,7 +69,9 @@ param = lqy.exp_param(
 
 samples = db.find_assets({'type' : 'calibrated PL spectrum'})
 names = list({sample.metadata['name'] for sample in samples})
-names.remove('no sample')
+if 'no sample' in names:
+    raise RuntimeError( 'No sample data not found.' )
+
 if 'exclude' in root.metadata:
     for exc in root.metadata[ 'exclude' ]:
         names.remove(exc)
@@ -78,7 +80,7 @@ if db.dev_mode():
     print( names )
 
 
-# In[5]:
+# In[12]:
 
 
 La = lqy.find(
@@ -113,7 +115,7 @@ for sample_name in names:
     Pc = lqy.find({'metadata.em_filter' : param.PL_marker, 'metadata.inboob' : 'inbeam'}, group, show_details = show_details)
     fs = lqy.find({'metadata.em_filter' : param.PL_marker, 'metadata.fsip' : 'fs'}, group, show_details = show_details)
 
-    show_details = True and db.dev_mode()
+    show_details = True
 
     sPL = lqy.PLQY_dataset(db, La, Lb, Lc, Pa, Pb, Pc, fs, sample_name, param)
     #sPL.fs.plot(yscale = 'linear', title = sPL.fs_asset.metadata['orig_fn'])

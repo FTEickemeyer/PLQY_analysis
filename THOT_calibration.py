@@ -7,7 +7,7 @@
 # 
 # Calibration of raw data.
 
-# In[3]:
+# In[8]:
 
 
 import re
@@ -25,14 +25,14 @@ system_dir = pkg_resources.resource_filename('FTE_analysis_libraries', 'System_d
 cal_lamp_dir = pkg_resources.resource_filename('FTE_analysis_libraries', 'System_data/Calibration_lamp_spectra')
 
 
-# In[7]:
+# In[9]:
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = '../hong-sn' )
+db = ThotProject( dev_root = '../double_perovskite_temperature_dependence/trial-06' )
 
 
-# In[3]:
+# In[10]:
 
 
 # File extension for raw data
@@ -44,7 +44,7 @@ lamp_spec_FN = 'caldata-BN-LH250-V01_sn51102-LH250_snL2229-200805.txt'
 hole_diameter = 3e-3  # m
 
 
-# In[4]:
+# In[11]:
 
 
 # Load lamp calibration file
@@ -59,11 +59,10 @@ lampspec_graph = lampspec.plot(yscale = 'log', return_fig = True, show_plot = ( 
 lqy.add_graph(db, 'lampspec.png', lampspec_graph)
 
 
-# In[ ]:
+# In[12]:
 
 
 # Load measured calibration spectra
-
 rawcalib = db.find_assets({'type' : 'raw calibration'})
 sa = []
 for i, asset in enumerate(rawcalib):
@@ -86,7 +85,7 @@ calibspec_graph = calib.plot(yscale = 'log', figsize = (20,20), return_fig = Tru
 lqy.add_graph(db, 'calibration_spectra.png', calibspec_graph)
 
 
-# In[6]:
+# In[13]:
 
 
 # Calculate calibration function. This function is multiplied with all cps data to yield photon flux
@@ -97,7 +96,7 @@ calibfn_graph = calibfn.plot(yscale = 'log', showindex = True, figsize = (20,20)
 lqy.add_graph(db, 'calibration_function.png', calibfn_graph)
 
 
-# In[7]:
+# In[14]:
 
 
 # Plot single calibration function
@@ -108,7 +107,7 @@ if do_this_step1:
     calibfn.sa[idx].plot(yscale = 'log', bottom = 8e8, top = 10e10)
 
 
-# In[8]:
+# In[15]:
 
 
 # Savgol filter for selected calibration function (700 LP free space)
@@ -125,11 +124,10 @@ if do_this_step2:
         calibfn.sa[idx] = calibfn_new
 
 
-# In[9]:
+# In[16]:
 
 
 # Load all PL raw spectra
-
 rawsamples = db.find_assets({'type' : 'raw PL spectrum'})
 #print(rawsamples)
 #print(rawsamples[1].file)
@@ -161,11 +159,10 @@ if do_this_step3:
 
 # Calibrate
 
-# In[11]:
+# In[22]:
 
 
 # Calibrate PL spectra
-
 PLspectra_nm = rawPLspectra.calibrate(calibfn, check = False)
 PLspectra_nm.names_to_label(split_ch = '.' + file_ext)
 
@@ -175,11 +172,11 @@ lqy.add_graph(db, 'calib_PLspectra.png', calib_PLspectra_graph)
 
 # Create new asset
 
-# In[12]:
+# In[23]:
 
 
 for idx, sp in enumerate(PLspectra_nm.sa):
-    #print(sp.name)
+    print(sp.name)
     asset = db.find_asset({'metadata.orig_fn' : sp.name})
     metadata = asset.metadata
     #print(metadata)
