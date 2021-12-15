@@ -1,12 +1,1 @@
-[
-    {
-        "script": "root:\\..\\THOT_PLQY_all.py",
-        "priority": 1,
-        "autorun": true
-    },
-    {
-        "script": "root:\\..\\THOT_PLQY_individual.py",
-        "priority": 0,
-        "autorun": true
-    }
-]
+[]
