@@ -1,11 +1,11 @@
 {
-    "created": "2021-12-03 17:20:34",
+    "created": "2021-12-08 14:54:42",
     "name": "calibration--fs--GigahertzOptik--Andor_0.02964s_500acc_600lmm_center500nm_200umSlit_450LPF",
     "type": "",
     "description": "",
     "tags": [],
     "metadata": {},
-    "file": "..\\..\\..\\..\\..\\..\\..\\..\\ab Data\\PL-PLQY\\calibration\\Current calibration\\calibration--fs--GigahertzOptik--Andor_0.02964s_500acc_600lmm_center500nm_200umSlit_450LPF.csv",
+    "file": "calibration--fs--GigahertzOptik--Andor_0.02964s_500acc_600lmm_center500nm_200umSlit_450LPF.csv",
     "creator_type": "user",
     "creator": "Felix"
 }

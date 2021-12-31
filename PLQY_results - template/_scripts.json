@@ -1,1 +1,7 @@
-[]
+[
+    {
+        "script": "root:/..\\THOT_PLQY_individual.py",
+        "priority": 0,
+        "autorun": true
+    }
+]
