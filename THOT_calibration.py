@@ -7,7 +7,7 @@
 # 
 # Calibration of raw data.
 
-# In[3]:
+# In[1]:
 
 
 import re
@@ -25,79 +25,82 @@ system_dir = pkg_resources.resource_filename('FTE_analysis_libraries', 'System_d
 cal_lamp_dir = pkg_resources.resource_filename('FTE_analysis_libraries', 'System_data/Calibration_lamp_spectra')
 
 
-# In[7]:
+# In[2]:
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = '../hong-sn' )
+db = ThotProject( dev_root = r'PLQY_results\PLQY' )
 
 
 # In[3]:
 
 
-# File extension for raw data
+#File extension for raw data
 file_ext = 'csv'
 #file_ext = 'asc'
 
 # Gigahertz calibration lamp
 lamp_spec_FN = 'caldata-BN-LH250-V01_sn51102-LH250_snL2229-200805.txt'
-hole_diameter = 3e-3  # m
+hole_diameter = 3e-3 #m
 
 
-# In[4]:
+# In[6]:
 
 
 # Load lamp calibration file
 lampspec_irr = spc.PEL_spectrum.load(cal_lamp_dir, lamp_spec_FN, header = 1, delimiter = '\t', 
                              quants = dict(x = 'Wavelength', y = 'Spectral irradiance'), units = dict(x = 'nm', y = 'W/[m2 nm]'))
 
-#lampspec = lamp_calib * 1  # change for absolute calibration taking into account excitation port aperture of integrating sphere
+#lampspec = lamp_calib * 1 # change for absolute calibration taking into account excitation port aperture of integrating sphere
 lampspec = lampspec_irr.irradiance_to_photonflux(factor = 1e-6/1e-4)
 #plot_first_n_lines(cal_lamp_dir, lamp_spec_FN, n=20)
-
-lampspec_graph = lampspec.plot(yscale = 'log', return_fig = True, show_plot = ( False and db.dev_mode() ) ) 
+lampspec_graph = lampspec.plot(yscale = 'log', return_fig = True, show_plot = ( False and db.dev_mode() ))
 lqy.add_graph(db, 'lampspec.png', lampspec_graph)
 
 
-# In[ ]:
+# In[14]:
 
 
 # Load measured calibration spectra
 
 rawcalib = db.find_assets({'type' : 'raw calibration'})
+#print(dir(rawcalib[1]))
+#print(rawcalib[3].file)
+#print(rawcalib[1].metadata)
 sa = []
 for i, asset in enumerate(rawcalib):
     fp = asset.file
+    print(fp)
     fn = os.path.basename(fp)
-    directory = os.path.dirname(fp)
+    print(fn)
+    directory = os.path.dirname(fp) # required for long paths
+    print(directory)
     acc = asset.metadata['acc']
     int_s = asset.metadata['int_s']
     calib = spc.PEL_spectrum.load(directory, fn, quants = dict(x = 'Wavelength', y = 'Intensity'), units = dict(x = 'nm', y = 'cps'))
     calib.y = calib.y / (int_s * acc)
     sa.append(calib)
-    
 calib = spc.PEL_spectra(sa)
 calib.names_to_label('.' + file_ext)
-
 # Make sure that no data value is < min (especially not 0 or negative)
 calib.all_values_greater_min(min = 1e-1)        
 
-calibspec_graph = calib.plot(yscale = 'log', figsize = (20,20), return_fig = True, show_plot = False)
+calibspec_graph = calib.plot(yscale = 'log', figsize = (20,20), return_fig = True, show_plot = ( True and db.dev_mode() ))
 lqy.add_graph(db, 'calibration_spectra.png', calibspec_graph)
 
 
-# In[6]:
+# In[8]:
 
 
 # Calculate calibration function. This function is multiplied with all cps data to yield photon flux
 calibfn = spc.PEL_spectra.calc_calfn(calib, lampspec)
 calibfn.names_to_label('.csv')
 
-calibfn_graph = calibfn.plot(yscale = 'log', showindex = True, figsize = (20,20), return_fig = True, show_plot = False)
+calibfn_graph = calibfn.plot(yscale = 'log', showindex = True, figsize = (20,20), return_fig = True, show_plot = ( True and db.dev_mode() ))
 lqy.add_graph(db, 'calibration_function.png', calibfn_graph)
 
 
-# In[7]:
+# In[9]:
 
 
 # Plot single calibration function
@@ -108,7 +111,7 @@ if do_this_step1:
     calibfn.sa[idx].plot(yscale = 'log', bottom = 8e8, top = 10e10)
 
 
-# In[8]:
+# In[10]:
 
 
 # Savgol filter for selected calibration function (700 LP free space)
@@ -125,7 +128,7 @@ if do_this_step2:
         calibfn.sa[idx] = calibfn_new
 
 
-# In[9]:
+# In[11]:
 
 
 # Load all PL raw spectra
@@ -149,7 +152,7 @@ rawPLspectra.names_to_label('.' + file_ext)
 #rawPLspectra.plot(yscale = 'log',figsize = (20,20), divisor = 1e7, showindex = True)    
 
 
-# In[10]:
+# In[12]:
 
 
 # Plot single raw spectrum
@@ -161,7 +164,7 @@ if do_this_step3:
 
 # Calibrate
 
-# In[11]:
+# In[13]:
 
 
 # Calibrate PL spectra
@@ -169,13 +172,13 @@ if do_this_step3:
 PLspectra_nm = rawPLspectra.calibrate(calibfn, check = False)
 PLspectra_nm.names_to_label(split_ch = '.' + file_ext)
 
-calib_PLspectra_graph = PLspectra_nm.plot(yscale = 'log', divisor = 1e5, title = 'Relative spectral photon flux', showindex = True, figsize = (20, 10), return_fig = True, show_plot = False)
+calib_PLspectra_graph = PLspectra_nm.plot(yscale = 'log', divisor = 1e5, title = 'Relative spectral photon flux', showindex = True, figsize = (20, 10), return_fig = True, show_plot = ( False and db.dev_mode() ))
 lqy.add_graph(db, 'calib_PLspectra.png', calib_PLspectra_graph)
 
 
 # Create new asset
 
-# In[12]:
+# In[ ]:
 
 
 for idx, sp in enumerate(PLspectra_nm.sa):
@@ -188,12 +191,12 @@ for idx, sp in enumerate(PLspectra_nm.sa):
     asset_prop = dict(name = f'{idx}_{name}_calibrated PL spectrum.csv', type = 'calibrated PL spectrum', metadata = metadata)
     TFN = db.add_asset(asset_prop)
     fn = os.path.basename(TFN)
-
+    print(f'{idx: 3}: {fn}') 
     directory = os.path.dirname(TFN)
     sp.save(directory, fn, check_existing = False)
 
 
-# In[8]:
+# In[ ]:
 
 
 if not db.dev_mode():
@@ -202,7 +205,7 @@ if not db.dev_mode():
 
 # # Supplemental code
 
-# In[ ]:
+# In[15]:
 
 
 #Plot all data normalized within [left, right]
@@ -222,7 +225,7 @@ if do_this:
     #spa2.plot(yscale = 'log', title = 'Relative spectral photon flux', left = left, right = right, bottom = m*1e-2, top = m*1.1, figsize = (30, 20), nolabel = False)
 
 
-# In[ ]:
+# In[16]:
 
 
 PLspectra_nm.plot(yscale = 'linear', bottom = 0, title = 'Relative spectral photon flux', showindex = True, figsize = (20, 10), in_name = ['fs'])
