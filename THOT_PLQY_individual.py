@@ -5,9 +5,7 @@
 # 
 # _by Felix Eickemeyer_
 # 
-# PLQY
-# 
-# Calibration and correction has to be done before.
+# Calibration and correction has to be done before. 
 
 # In[1]:
 
@@ -27,41 +25,37 @@ from FTE_analysis_libraries.General import f1240, Vsq, V_loss, QFLS
 # In[2]:
 
 
-# Initializes Thot project
-db = ThotProject( dev_root = '../double_perovskite_temperature_dependence/trial-06' )
-root = db.find_container( { '_id': db.root } )
+#Perovskite
+#which_sample = 'Haizhou-FAPbI3'
+which_sample = 'FAPbI3'
+
+#DSC
+#which_sample = 'Yameng DSC'
+#which_sample = 'dye on TiO2'
+#which_sample = 'dye on Al2O3'
+#which_sample = 'Coumarin 153'
+#which_sample = 'MS5'
+#which_sample = 'XY1b'
+
+param = lqy.exp_param(which_sample = which_sample, excitation_laser = None, PL_left = None, PL_right = None, PL_peak = None, corr_offs_left = 40, corr_offs_right = 50, PL_peak_auto = False, eval_Pb = False)
+#Schawaller, Salathe
+#param = lqy.exp_param(which_sample = None, excitation_laser = 657, PL_left = 705, PL_right = 1000, PL_peak = 720, corr_offs_left = 0, corr_offs_right = 10, PL_peak_auto = False, eval_Pb = False)
 
 
 # In[3]:
 
 
-# Perovskite
-if 'sample_type' in root.metadata:
-    which_sample = root.metadata[ 'sample_type' ]
+# Initializes Thot project
+db = ThotProject( dev_root = r'PLQY_results' )
 
-else:
-    # default sample type
-    which_sample = 'FAPbI3'
 
-    #DSC
-    #which_sample = 'Yameng DSC'
-    #which_sample = 'dye on TiO2'
-    #which_sample = 'dye on Al2O3'
-    #which_sample = 'Coumarin 153'
-    #which_sample = 'MS5'
-    #which_sample = 'XY1b'
+# In[2]:
 
-param = lqy.exp_param(
-    which_sample = which_sample,
-    excitation_laser = None,
-    PL_left = None,
-    PL_right = None,
-    PL_peak = None,
-    corr_offs_left = 40,
-    corr_offs_right = 50,
-    PL_peak_auto = False,
-    eval_Pb = False
-)
+
+<<<<<<< REMOTE CELL DELETED >>>>>>>
+# Initializes Thot project
+db = ThotProject( dev_root = '../double_perovskite_temperature_dependence/trial-06' )
+root = db.find_container( { '_id': db.root } )
 
 
 # In[4]:
@@ -69,6 +63,7 @@ param = lqy.exp_param(
 
 samples = db.find_assets({'type' : 'calibrated PL spectrum'})
 names = list({sample.metadata['name'] for sample in samples})
+<<<<<<< local
 if 'no sample' in names:
     raise RuntimeError( 'No sample data not found.' )
 
@@ -78,36 +73,29 @@ if 'exclude' in root.metadata:
 
 if db.dev_mode():
     print( names )
+=======
+names.remove('no sample')
+names
+>>>>>>> remote
 
 
 # In[12]:
 
 
-La = lqy.find(
-    {
-        'metadata.name' : 'no sample',
-        'metadata.em_filter' : param.laser_marker
-    }, 
-    samples, 
-    show_details = ( True and db.dev_mode() )
-)
-
-Pa = lqy.find(
-    {
-        'metadata.name' : 'no sample',
-        'metadata.em_filter' : param.PL_marker
-    },
-    samples,
-    show_details = ( True and db.dev_mode() )
-)
+La = lqy.find({'metadata.name' : 'no sample', 'metadata.em_filter' : param.laser_marker}, samples, show_details = True)
+Pa = lqy.find({'metadata.name' : 'no sample', 'metadata.em_filter' : param.PL_marker}, samples, show_details = True)
 
 
 # In[6]:
 
 
-for sample_name in names:
-    show_details = True and db.dev_mode()
-    print( sample_name )
+for idx in range(len(names)):
+    show_details = True
+    sample_name = names[idx]
+    
+    print('____________________________')
+    print(sample_name)
+    
     group = thot.filter({'metadata.name' : sample_name}, samples)
     Lb = lqy.find({'metadata.em_filter' : param.laser_marker, 'metadata.inboob' : 'outofbeam'}, group, show_details = show_details)
     Lc = lqy.find({'metadata.em_filter' : param.laser_marker, 'metadata.inboob' : 'inbeam'}, group, show_details = show_details)
