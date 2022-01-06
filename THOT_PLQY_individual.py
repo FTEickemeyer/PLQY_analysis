@@ -5,121 +5,189 @@
 # 
 # _by Felix Eickemeyer_
 # 
-# Calibration and correction has to be done before. 
+# Calculation of PLQY for each sample.
 
-# In[1]:
+# In[38]:
 
 
-import os
-from os import getcwd, listdir
+import warnings
+
 import thot
-from thot import ThotProject
-import importlib
-from importlib import reload
 
 from FTE_analysis_libraries import PLQY as lqy
 from FTE_analysis_libraries import Spectrum as spc
 from FTE_analysis_libraries.General import f1240, Vsq, V_loss, QFLS
 
 
-# In[2]:
-
-
-#Perovskite
-#which_sample = 'Haizhou-FAPbI3'
-which_sample = 'FAPbI3'
-
-#DSC
-#which_sample = 'Yameng DSC'
-#which_sample = 'dye on TiO2'
-#which_sample = 'dye on Al2O3'
-#which_sample = 'Coumarin 153'
-#which_sample = 'MS5'
-#which_sample = 'XY1b'
-
-param = lqy.exp_param(which_sample = which_sample, excitation_laser = None, PL_left = None, PL_right = None, PL_peak = None, corr_offs_left = 40, corr_offs_right = 50, PL_peak_auto = False, eval_Pb = False)
-#Schawaller, Salathe
-#param = lqy.exp_param(which_sample = None, excitation_laser = 657, PL_left = 705, PL_right = 1000, PL_peak = 720, corr_offs_left = 0, corr_offs_right = 10, PL_peak_auto = False, eval_Pb = False)
-
-
-# In[3]:
+# In[39]:
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = r'PLQY_results' )
+# db = thotThotProject(dev_root = 'PLQY_results')
+db = thot.ThotProject(dev_root = '../haizhou-temperature_coefficients')
+root = db.find_container({'_id': db.root})
 
 
-# In[2]:
+# In[40]:
 
 
-<<<<<<< REMOTE CELL DELETED >>>>>>>
-# Initializes Thot project
-db = ThotProject( dev_root = '../double_perovskite_temperature_dependence/trial-06' )
-root = db.find_container( { '_id': db.root } )
+# get sample type
+
+if 'sample_type' in root.metadata:
+    which_sample = root.metadata['sample_type']
+
+else:
+    # default sample type
+    # which_sample = 'Haizhou-FAPbI3'
+    which_sample = 'FAPbI3'
+
+    # DSC
+    # which_sample = 'Yameng DSC'
+    # which_sample = 'dye on TiO2'
+    # which_sample = 'dye on Al2O3'
+    # which_sample = 'Coumarin 153'
+    # which_sample = 'MS5'
+    # which_sample = 'XY1b'
+
+param = lqy.exp_param(
+    which_sample = which_sample,
+    excitation_laser = None,
+    PL_left = None,
+    PL_right = None,
+    PL_peak = None,
+    corr_offs_left = 40,
+    corr_offs_right = 50,
+    PL_peak_auto = False,
+    eval_Pb = False
+)
 
 
-# In[4]:
+# In[41]:
 
 
 samples = db.find_assets({'type' : 'calibrated PL spectrum'})
 names = list({sample.metadata['name'] for sample in samples})
-<<<<<<< local
-if 'no sample' in names:
-    raise RuntimeError( 'No sample data not found.' )
+if 'no sample' not in names:
+    raise RuntimeError('No sample data not found.')
 
+names.remove('no sample')
 if 'exclude' in root.metadata:
     for exc in root.metadata[ 'exclude' ]:
         names.remove(exc)
 
 if db.dev_mode():
-    print( names )
-=======
-names.remove('no sample')
-names
->>>>>>> remote
+    print(names)
 
 
-# In[12]:
+# In[42]:
 
 
-La = lqy.find({'metadata.name' : 'no sample', 'metadata.em_filter' : param.laser_marker}, samples, show_details = True)
-Pa = lqy.find({'metadata.name' : 'no sample', 'metadata.em_filter' : param.PL_marker}, samples, show_details = True)
+La = lqy.find(
+    {'metadata.name': 'no sample', 'metadata.em_filter': param.laser_marker},
+    samples,
+    show_details = (True and db.dev_mode())
+)
+
+Pa = lqy.find(
+    {'metadata.name': 'no sample', 'metadata.em_filter': param.PL_marker},
+    samples,
+    show_details = (True and db.dev_mode())
+)
 
 
-# In[6]:
+# In[43]:
 
+
+# You can change maxNumberOutputs in settings: click on Menu bar → Settings → Advanced Settings Editor → Notebook → set maxNumberOutputs in the User Preferences tab, like:
+# {
+#     "maxNumberOutputs": 0
+# }
+
+#idx = 0
+#param.eval_Pb = True
+show_details = (True and db.dev_mode())
+save_plots = (False or not db.dev_mode())
 
 for idx in range(len(names)):
-    show_details = True
     sample_name = names[idx]
-    
-    print('____________________________')
-    print(sample_name)
-    
-    group = thot.filter({'metadata.name' : sample_name}, samples)
-    Lb = lqy.find({'metadata.em_filter' : param.laser_marker, 'metadata.inboob' : 'outofbeam'}, group, show_details = show_details)
-    Lc = lqy.find({'metadata.em_filter' : param.laser_marker, 'metadata.inboob' : 'inbeam'}, group, show_details = show_details)
-    Pb = lqy.find({'metadata.em_filter' : param.PL_marker, 'metadata.inboob' : 'outofbeam'}, group, show_details = show_details)
-    Pc = lqy.find({'metadata.em_filter' : param.PL_marker, 'metadata.inboob' : 'inbeam'}, group, show_details = show_details)
-    fs = lqy.find({'metadata.em_filter' : param.PL_marker, 'metadata.fsip' : 'fs'}, group, show_details = show_details)
 
-    show_details = True
+    if show_details:
+        print(f'\n{idx:} ____________________________')
+        print(sample_name)
+
+    group = thot.filter({'metadata.name': sample_name}, samples)
+    Lb = lqy.find(
+        {'metadata.em_filter': param.laser_marker, 'metadata.inboob': 'outofbeam'},
+        group,
+        show_details = show_details
+    )
+    
+    Lc = lqy.find(
+        {'metadata.em_filter': param.laser_marker, 'metadata.inboob': 'inbeam'},
+        group,
+        show_details = show_details
+    )
+    
+    Pb = lqy.find(
+        {'metadata.em_filter': param.PL_marker, 'metadata.inboob': 'outofbeam'},
+        group,
+        show_details = show_details
+    )
+    
+    Pc = lqy.find(
+        {'metadata.em_filter': param.PL_marker, 'metadata.inboob': 'inbeam'},
+        group,
+        show_details = show_details
+    )
+    
+    fs = lqy.find(
+        {'metadata.em_filter': param.PL_marker, 'metadata.fsip': 'fs'},
+        group,
+        show_details = show_details
+    )
+
+    missing = []
+    if Lb is None:
+        missing.append('Lb')
+    
+    if Lc is None:
+        missing.append('Lc')
+        
+    if fs is None:
+        missing.append('fs')
+    
+    if Pc is None:
+        missing.append('Pc')
+    
+    if (Pb is None) and (param.eval_Pb == True):
+        missing.append('Pb')
+    
+    if len(missing):
+        warnings.warn(
+            f"{missing} is missing for sample {sample_name}, PLQY can't be evaluated!"
+        )
+        
+        continue
 
     sPL = lqy.PLQY_dataset(db, La, Lb, Lc, Pa, Pb, Pc, fs, sample_name, param)
     #sPL.fs.plot(yscale = 'linear', title = sPL.fs_asset.metadata['orig_fn'])
-    #sPL.P.plot()
 
     sPL.find_PL_peak()
-    sPL.inb_adjust(adj_factor = None, show_adjust_factor = False, show = show_details)
-    sPL.calc_abs(what = 'inb', show_details = show_details)
+    sPL.inb_adjust(adj_factor = None, show_adjust_factor = False, save_plots = save_plots, show_plots = show_details)
+    sPL.calc_abs(what = 'inb', save_plots = show_details, show_plot = show_details)
 
-    #sPL.oob_adjust(adj_factor = None, show_adjust_factor = True, show = True)
-    #sPL.calc_abs(what = 'oob', show_details = show_details)
+    if param.eval_Pb == True:
+        sPL.oob_adjust(
+            adj_factor = None,
+            show_adjust_factor = True,
+            save_plots = save_plots,
+            show_plots = show_details
+        )
+        
+        sPL.calc_abs(what = 'oob', save_plots = show_details, show_plot = show_details)
 
-    sPL.calc_PLQY(show = show_details, show_lum = 'linear')
-
+    sPL.calc_PLQY(show = show_details, show_plots = show_details, save_plots = save_plots, show_lum = 'linear')
     sPL.abs_pf_spec(nsuns = 1)
-
     sPL.save_asset()
 
 

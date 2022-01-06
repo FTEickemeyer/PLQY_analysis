@@ -6,14 +6,6 @@
 # _by Felix Eickemeyer_
 # 
 # Transforms raw data from Andor to data with meta data.
-# __
-# 
-# _Version 10.11.2021 in Python 3_
-# 
-# _Change log:_  
-# 1.1.0: root = db.find_container(dict(_id = db.root)), so that it can run from the children container  
-# 
-# 
 
 # In[1]:
 
@@ -37,7 +29,7 @@ db = ThotProject( dev_root = r'PLQY_results\PLQY' )
 root = db.find_container(dict(_id = db.root))
 
 
-# In[ ]:
+# In[3]:
 
 
 # Generate new sample and calibration assets with metadata
