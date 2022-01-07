@@ -11,11 +11,10 @@
 
 
 import os
-from os import getcwd, listdir
+import shutil
+
 import pandas as pd
-import thot
 from thot import ThotProject
-from importlib import reload
 
 from FTE_analysis_libraries import General as gen
 from FTE_analysis_libraries import PLQY as lqy
@@ -26,61 +25,66 @@ from FTE_analysis_libraries import Spectrum as spc
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = r'PLQY_results' )
+# db = ThotProject(dev_root = 'PLQY_results')
+db = ThotProject(dev_root = '../haizhou-temperature_coefficients/trial-01')
 
 
 # In[3]:
 
 
 samples = db.find_assets({'type': 'absolute PL spectrum'})
+samples.sort(key = lambda asset: asset.name.lower())  # by default, sort samples by name
 for idx, sample in enumerate(samples):
     A = sample.metadata["A"]
-    PLQY = sample.metadata["PLQY"]    
-    print(f'{idx:2}: {sample.name.split("_absolute")[0]}, A = {A:.1e}, PLQY = {PLQY:.1e}')    
+    PLQY = sample.metadata["PLQY"]
+    if db.dev_mode():
+        print(f'{idx}: {sample.name.split("_absolute")[0]}, A = {A:.1e}, PLQY = {PLQY:.1e}')    
 
 
 # In[4]:
 
 
-#Select samples and change order
+# Select samples and change order
 do_this_step = True
-if do_this_step or ( not db.dev_mode() ):
-    samples = db.find_assets({'type' : 'absolute PL spectrum'})
-    #Lin Li
-    #order = [idx for idx in range(24)]
-    #order.remove(7)
+if do_this_step and db.dev_mode():
+    order = [0, 1, 2, 3, 4, 5]
     
-    #Shuai
-    order = [0, 1, 3, 4, 5, 2, 6, 7, 8, 9]
+    samples = [
+        samples[order[idx]] 
+        for idx in range(len(order))
+    ]
     
-    samples_new = [samples[order[idx]] for idx in range(len(order))]
-    for idx, sample in enumerate(samples_new):
-        print(f'{idx:2}: {sample.name}')
+    for idx, sample in enumerate(samples):
+        print(f'{idx}: {sample.name}')
+        
     do_this_step = False
-else:
-    samples_new = samples
 
 
 # In[5]:
 
 
-samples = samples_new
 def load_spectrum(asset):
-    return spc.PEL_spectrum.load(os.path.dirname(asset.file), FN = os.path.basename(asset.file), take_quants_and_units_from_file = True)
-sa = []
-for idx, sample in enumerate(samples):
-    sa.append(load_spectrum(sample))
-    print(f'{idx:2}: {sample.name}')
+    return spc.PEL_spectrum.load(
+        os.path.dirname(asset.file),
+        FN = os.path.basename(asset.file),
+        take_quants_and_units_from_file = True
+    )
+
+sa = [load_spectrum(sample) for sample in samples]
 
 
-# In[6]:
+# In[9]:
 
 
 allPL = spc.PEL_spectra(sa)
 allPL.names_to_label()
 
 new_labels = []
-strlen = int(max([len(samples[idx].name.split('_absolute')[0]) for idx in range(len(samples))]))
+strlen = int(max([
+    len(samples[idx].name.split('_absolute')[0]) 
+    for idx in range(len(samples))
+]))
+
 for idx in range(len(samples)):
     allPL.sa[idx].plotstyle = dict(color = gen.colors[idx], linewidth = 5, linestyle = '-')
     sm = samples[idx].metadata
@@ -89,7 +93,9 @@ for idx in range(len(samples)):
     s_name = samples[idx].name.split('_absolute')[0]
     new_labels.append(s_name)
     PF = allPL.sa[idx].photonflux(start = 700, stop = 900)
-    print(f'{s_name.ljust(strlen+1)}: A = {A:.1e}, PLQY = {PLQY:.1e}, PF = {PF:.1e} 1/(s m2)')
+    
+    if db.dev_mode():
+        print(f'{s_name.ljust(strlen+1)}: A = {A:.1e}, PLQY = {PLQY:.1e}, PF = {PF:.1e} 1/(s m2)')
 
 change_plotstyle = False
 if change_plotstyle:
@@ -126,17 +132,30 @@ if change_plotstyle:
 
 #allPL.label(['s1', 's2', 's3', 's4', 's6'])
 allPL.label(new_labels)
-all_graph = allPL.plot(bottom = 0, plotstyle = 'individual', figsize = (8, 6), return_fig = True, show_plot = False)
+all_graph = allPL.plot(
+    bottom = 0,
+    plotstyle = 'individual',
+    figsize = (8, 6),
+    return_fig = True,
+    show_plot = False
+)
+
 FN_lin = 'all_absolute_PL_spectra_linear.png'
 lqy.add_graph(db, FN_lin, all_graph)
-all_graph_log = allPL.plot(yscale = 'log', divisor = 1e3, plotstyle = 'individual', figsize = (8, 6), return_fig = True, show_plot = False)
+all_graph_log = allPL.plot(
+    yscale = 'log',
+    divisor = 1e3,
+    plotstyle = 'individual',
+    figsize = (8, 6),
+    return_fig = True,
+    show_plot = False
+)
+
 FN_log = 'all_absolute_PL_spectra_semilog.png'
 lqy.add_graph(db, FN_log, all_graph_log)
-#del all_graph
-#del all_graph_log
 
 
-# In[7]:
+# In[10]:
 
 
 names = []
@@ -165,7 +184,7 @@ for sample in samples:
     fs_absint_fac_arr.append(sm['fs_absint_factor'])    
 
 
-# In[8]:
+# In[11]:
 
 
 # Save PLQY data
@@ -186,7 +205,7 @@ if do_this_step:
     do_this_step = False
 
 
-# In[10]:
+# In[12]:
 
 
 #Save all data in exchange folder
@@ -194,10 +213,9 @@ exch_dir = os.path.join(db.root, 'exchange')
 
 try:
     os.makedirs(exch_dir, exist_ok = True)
-except OSError as error:
-    print("Directory '%s' can not be created" % exch_dir)
     
-import shutil
+except OSError as error:
+    print( f'Directory {exch_dir} can not be created.' )
 
 # PLQY.csv
 src = asset_filepath
