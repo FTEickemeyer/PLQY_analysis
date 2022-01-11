@@ -19,18 +19,19 @@ from FTE_analysis_libraries import Spectrum as spc
 from FTE_analysis_libraries.General import f1240, Vsq, V_loss, QFLS
 
 
+# #### Initialize Thot project
+
 # In[ ]:
 
 
-# Initializes Thot project
 db = thotThotProject(dev_root = 'PLQY_results')
 root = db.find_container( { '_id': db.root } )
 
 
+# #### Get sample type
+
 # In[ ]:
 
-
-# get sample type
 
 if 'sample_type' in root.metadata:
     which_sample = root.metadata[ 'sample_type' ]
@@ -61,6 +62,8 @@ param = lqy.exp_param(
 )
 
 
+# #### Group samples
+
 # In[ ]:
 
 
@@ -78,6 +81,8 @@ if db.dev_mode():
     print( names )
 
 
+# #### No sample data
+
 # In[ ]:
 
 
@@ -94,6 +99,8 @@ Pa = lqy.find(
 )
 
 
+# ### Calculate PLQY
+
 # In[ ]:
 
 
@@ -102,18 +109,17 @@ Pa = lqy.find(
 #     "maxNumberOutputs": 0
 # }
 
-#idx = 0
-#param.eval_Pb = True
+# idx = 0
+# param.eval_Pb = True
 show_details = ( True and db.dev_mode() )
 save_plots = ( False or not db.dev_mode() )
 
-for idx in range( len( names ) ):
-    sample_name = names[ idx ]
-
+for idx, sample_name in enumerate( names ):
     if show_details:
         print( f'\n{idx:2} ____________________________' )
         print( sample_name )
 
+    # get all sample data in group
     group = thot.filter( { 'metadata.name': sample_name }, samples )
     Lb = lqy.find(
         { 'metadata.em_filter': param.laser_marker, 'metadata.inboob': 'outofbeam' },
@@ -145,6 +151,7 @@ for idx in range( len( names ) ):
         show_details = show_details
     )
 
+    # check for missing data
     missing = []
     if Lb is None:
         missing.append( 'Lb' )
@@ -168,8 +175,9 @@ for idx in range( len( names ) ):
         
         continue
 
+    # calculate PLQY data
     sPL = lqy.PLQY_dataset( db, La, Lb, Lc, Pa, Pb, Pc, fs, sample_name, param )
-    #sPL.fs.plot(yscale = 'linear', title = sPL.fs_asset.metadata['orig_fn'])
+    # sPL.fs.plot( yscale = 'linear', title = sPL.fs_asset.metadata[ 'orig_fn' ] )
 
     sPL.find_PL_peak()
     sPL.inb_adjust(
@@ -198,6 +206,7 @@ for idx in range( len( names ) ):
         show_lum = 'linear'
     )
     
+    # save data
     sPL.abs_pf_spec( nsuns = 1 )
     sPL.save_asset()
 

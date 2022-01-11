@@ -7,7 +7,7 @@
 # 
 # Evaluation of all absolute PLQY data.
 
-# In[1]:
+# In[ ]:
 
 
 import os
@@ -21,14 +21,15 @@ from FTE_analysis_libraries import PLQY as lqy
 from FTE_analysis_libraries import Spectrum as spc
 
 
-# In[2]:
+# #### Initializes Thot project
+
+# In[ ]:
 
 
-# Initializes Thot project
 db = ThotProject(dev_root = 'PLQY_results')
 
 
-# In[3]:
+# In[ ]:
 
 
 samples = db.find_assets( { 'type': 'absolute PL spectrum' } )
@@ -36,14 +37,15 @@ samples.sort( key = lambda asset: asset.name.lower() )  # by default, sort sampl
 for idx, sample in enumerate( samples ):
     A = sample.metadata[ 'A' ]
     PLQY = sample.metadata[ 'PLQY' ]
-    if db.dev_mode():
+    if True and db.dev_mode():
         print(f'{idx}: {sample.name.split( "_absolute" )[ 0 ] }, A = {A:.1e}, PLQY = {PLQY:.1e}' )    
 
 
-# In[4]:
+# #### Select samples and change order
+
+# In[ ]:
 
 
-# Select samples and change order
 do_this_step = True
 if do_this_step and db.dev_mode():
     order = [ 0, 1, 2, 3, 4, 5 ]
@@ -59,7 +61,7 @@ if do_this_step and db.dev_mode():
     do_this_step = False
 
 
-# In[5]:
+# In[ ]:
 
 
 def load_spectrum( asset ):
@@ -72,7 +74,7 @@ def load_spectrum( asset ):
 sa = [ load_spectrum( sample ) for sample in samples ]
 
 
-# In[6]:
+# In[ ]:
 
 
 allPL = spc.PEL_spectra( sa )
@@ -159,7 +161,7 @@ FN_log = 'all_absolute_PL_spectra_semilog.png'
 lqy.add_graph( db, FN_log, all_graph_log )
 
 
-# In[7]:
+# In[ ]:
 
 
 names = []
@@ -186,10 +188,11 @@ for sample in samples:
     fs_absint_fac_arr.append( sm[ 'fs_absint_factor' ] )
 
 
-# In[8]:
+# ### Save PLQY data
+
+# In[ ]:
 
 
-# Save PLQY data
 do_this_step = True
 if do_this_step:
     df = pd.DataFrame( {
@@ -216,8 +219,11 @@ if do_this_step:
     do_this_step = False
 
 
+# #### Save extracted data to share
+
 # In[ ]:
 
 
-
+if True and db.dev_mode():
+    get_ipython().run_line_magic('run', "'THOT_extract_share_data.py'")
 
