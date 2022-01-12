@@ -9,6 +9,7 @@
 
 import os
 import shutil
+
 from thot import ThotProject
 
 
@@ -17,38 +18,37 @@ from thot import ThotProject
 
 # Initializes Thot project
 db = ThotProject(dev_root = 'PLQY_results')
-
-samples = db.find_assets( { 'type': 'absolute PL spectrum' } )
-
-
-# In[ ]:
+root = db.find_container( { '_id': db.root } )
 
 
-exch_dir = os.path.join( db.root, 'exchange' )
+# In[2]:
+
+
+exch_dir = os.path.join(
+    db.root,
+    root.metadata.get( 'share_dir', 'exchange' )
+)
 
 try:
     os.makedirs( exch_dir, exist_ok = True )
     
 except OSError as error:
-    print( f'Directory {exch_dir} can not be created.' )
+    raise RuntimeError( f'Directory {exch_dir} can not be created.' )
 
-# PLQY.csv
-src = asset_filepath
-FN = os.path.basename( asset_filepath )
-dst =  os.path.join( exch_dir, FN )
-shutil.copyfile( src, dst )
+# collect assets for extraction
+abs_pl = db.find_assets( { 'type': 'absolute PL spectrum' } )  # extract all absolute PL spectra
+tagged = db.find_assets( { 'tags': { '$in': [ 'share' ] } } )  # extract all tagged assets
 
-# absolute PL spectra
-for sample in samples:
+# copy files into share folder
+for sample in [ *abs_pl, *tagged ]:
     src = sample.file
     FN = os.path.basename( sample.file )
     dst =  os.path.join( exch_dir, FN )
     shutil.copyfile( src, dst )
-    
-# all graph linear and semilog
-filepath = os.path.join( exch_dir, FN_lin )
-all_graph.savefig( filepath )
 
-filepath = os.path.join( exch_dir, FN_log )
-all_graph_log.savefig( filepath )
+
+# In[ ]:
+
+
+
 

@@ -136,7 +136,8 @@ if change_plotstyle:
     change_plotstyle = False
 
 
-#allPL.label(['s1', 's2', 's3', 's4', 's6'])
+# plot all spectra, lin scale
+# allPL.label(['s1', 's2', 's3', 's4', 's6'])
 allPL.label( new_labels )
 all_graph = allPL.plot(
     bottom = 0,
@@ -147,7 +148,9 @@ all_graph = allPL.plot(
 )
 
 FN_lin = 'all_absolute_PL_spectra_linear.png'
-lqy.add_graph( db, FN_lin, all_graph )
+lqy.add_graph( db, FN_lin, all_graph, asset_props = { 'tags': [ 'share' ] } )
+
+# plot all spectra, log scale
 all_graph_log = allPL.plot(
     yscale = 'log',
     divisor = 1e3,
@@ -158,7 +161,7 @@ all_graph_log = allPL.plot(
 )
 
 FN_log = 'all_absolute_PL_spectra_semilog.png'
-lqy.add_graph( db, FN_log, all_graph_log )
+lqy.add_graph( db, FN_log, all_graph_log, asset_props = { 'tags': [ 'share' ] } )
 
 
 # In[ ]:
@@ -213,7 +216,7 @@ if do_this_step:
     # if save_ok(join(directory, FN)):
     #    df.to_csv(join(directory, FN), header = True, index = False)
         
-    asset_prop = { 'name': f'csv_{FN}', 'type': 'csv', 'file': FN }
+    asset_prop = { 'name': f'csv_{FN}', 'type': 'csv', 'file': FN, 'tags': [ 'share' ] }
     asset_filepath = db.add_asset( asset_prop )
     df.to_csv( asset_filepath, header = True, index = False )
     do_this_step = False
