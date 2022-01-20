@@ -21,7 +21,7 @@ db = ThotProject(dev_root = 'PLQY_results')
 root = db.find_container( { '_id': db.root } )
 
 
-# In[2]:
+# In[ ]:
 
 
 exch_dir = os.path.join(
