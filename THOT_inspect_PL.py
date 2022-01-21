@@ -9,7 +9,7 @@
 # Calibration and correction has to be done before.
 # __
 
-# In[18]:
+# In[ ]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -31,14 +31,14 @@ reload(lqy)
 pass
 
 
-# In[19]:
+# In[ ]:
 
 
 # Initializes Thot project
 db = ThotProject( dev_root = r'PLQY_results' )
 
 
-# In[20]:
+# In[ ]:
 
 
 samples = db.find_assets({'type' : 'calibrated PL spectrum'})
@@ -46,7 +46,7 @@ for idx, sample in enumerate(samples):
     print(f'{idx:2}: {sample.name}')    
 
 
-# In[21]:
+# In[ ]:
 
 
 #Select samples and change order
@@ -61,7 +61,7 @@ else:
     samples_new = samples
 
 
-# In[38]:
+# In[ ]:
 
 
 samples = samples_new
@@ -76,7 +76,7 @@ for idx, sample in enumerate(samples):
     print(f'{idx:2}: {sample.name}')
 
 
-# In[41]:
+# In[ ]:
 
 
 allPL = spc.PEL_spectra(sa)

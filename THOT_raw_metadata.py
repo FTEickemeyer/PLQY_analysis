@@ -7,7 +7,7 @@
 # 
 # Transforms raw data from Andor to data with meta data.
 
-# In[1]:
+# In[ ]:
 
 
 import os
@@ -19,7 +19,7 @@ from importlib import reload
 from FTE_analysis_libraries import PLQY as lqy
 
 
-# In[2]:
+# In[ ]:
 
 
 # Initializes Thot project
@@ -27,7 +27,7 @@ db = ThotProject( dev_root = r'PLQY_results\PLQY' )
 root = db.find_container(dict(_id = db.root))
 
 
-# In[3]:
+# In[ ]:
 
 
 # Generate new sample and calibration assets with metadata
