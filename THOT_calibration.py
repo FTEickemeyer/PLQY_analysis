@@ -44,7 +44,7 @@ lamp_spec_FN = 'caldata-BN-LH250-V01_sn51102-LH250_snL2229-200805.txt'
 hole_diameter = 3e-3 #m
 
 
-# In[5]:
+# In[4]:
 
 
 # Load lamp calibration file
@@ -52,13 +52,14 @@ lampspec_irr = spc.PEL_spectrum.load(cal_lamp_dir, lamp_spec_FN, header = 1, del
                              quants = dict(x = 'Wavelength', y = 'Spectral irradiance'), units = dict(x = 'nm', y = 'W/[m2 nm]'))
 
 # lampspec = lamp_calib * 1 # change for absolute calibration taking into account excitation port aperture of integrating sphere
-lampspec = lampspec_irr.irradiance_to_photonflux(factor = 1e-6/1e-4)
+#lampspec = lampspec_irr.irradiance_to_photonflux(factor = 1e-6/1e-4) # This factor is used for the OceanOptics calibration lamp HL-3 plus
+lampspec = lampspec_irr.irradiance_to_photonflux()
 # plot_first_n_lines(cal_lamp_dir, lamp_spec_FN, n=20)
 # lampspec_graph = lampspec.plot(yscale = 'log', return_fig = True, show_plot = ( False and db.dev_mode() ))
 # lqy.add_graph(db, 'lampspec.png', lampspec_graph)
 
 
-# In[8]:
+# In[7]:
 
 
 # Load measured calibration spectra
@@ -96,11 +97,11 @@ calib.all_values_greater_min(min = 1e-1)
 calibfn = spc.PEL_spectra.calc_calfn(calib, lampspec)
 calibfn.names_to_label('.csv')
 
-# calibfn_graph = calibfn.plot(yscale = 'log', showindex = True, figsize = (20,20), return_fig = True, show_plot = ( True and db.dev_mode() ))
+#  calibfn_graph = calibfn.plot(yscale = 'log', showindex = True, figsize = (20,20), return_fig = True, show_plot = ( True and db.dev_mode() ))
 # lqy.add_graph(db, 'calibration_function.png', calibfn_graph)
 
 
-# In[10]:
+# In[7]:
 
 
 # Plot single calibration function
@@ -111,7 +112,7 @@ if do_this_step1:
     calibfn.sa[idx].plot(yscale = 'log', bottom = 8e8, top = 10e10)
 
 
-# In[11]:
+# In[8]:
 
 
 # Savgol filter for selected calibration function (700 LP free space)
@@ -128,7 +129,7 @@ if do_this_step2:
         calibfn.sa[idx] = calibfn_new
 
 
-# In[12]:
+# In[9]:
 
 
 # Load all PL raw spectra
@@ -152,7 +153,7 @@ rawPLspectra.names_to_label('.' + file_ext)
 #rawPLspectra.plot(yscale = 'log',figsize = (20,20), divisor = 1e7, showindex = True)    
 
 
-# In[13]:
+# In[10]:
 
 
 # Plot single raw spectrum
@@ -205,7 +206,7 @@ if not db.dev_mode():
 
 # # Supplemental code
 
-# In[ ]:
+# In[11]:
 
 
 #Plot all data normalized within [left, right]
