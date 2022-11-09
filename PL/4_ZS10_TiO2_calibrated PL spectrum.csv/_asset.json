@@ -1,0 +1,20 @@
+{
+    "name": "4_ZS10_TiO2_calibrated PL spectrum.csv",
+    "type": "calibrated PL spectrum",
+    "metadata": {
+        "name": "ZS10_TiO2",
+        "orig_fn": "ZS10_TiO2--fs--laser_422nm_1.0mW_OD0--Andor_0.1s_100acc_300lmm_center710nm_450LPF.csv",
+        "fsip": "fs",
+        "laser_nm": 422,
+        "laser_mW": 1.0,
+        "OD_filter": 0.0,
+        "int_s": 0.1,
+        "acc": 100,
+        "grating": 300,
+        "grating_center_nm": 710,
+        "em_filter": "450LPF"
+    },
+    "file": "4_ZS10_TiO2_calibrated PL spectrum.csv",
+    "creator_type": "script",
+    "creator": "C:\\Users\\dreickem\\AppData\\Local\\Temp/ipykernel_2372/2311034999.py"
+}

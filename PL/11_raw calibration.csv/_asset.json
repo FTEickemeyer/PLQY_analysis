@@ -1,0 +1,19 @@
+{
+    "name": "11_raw calibration.csv",
+    "type": "raw calibration",
+    "metadata": {
+        "name": "calibration",
+        "orig_fn": "calibration--ip--GigahertzOptik--Andor_0.1s_500acc_300lmm_center620nm_200umSlit_450LPF.csv",
+        "fsip": "ip",
+        "calib_lamp": "GigahertzOptik",
+        "int_s": 0.1,
+        "acc": 500,
+        "grating": 300,
+        "grating_center_nm": 620,
+        "slit_um": 200,
+        "em_filter": "450LPF"
+    },
+    "file": "\\\\?\\C:\\Users\\dreickem\\switchdrive\\Work\\Python\\PL\\Steady_state_PL\\PLQY\\PL\\calibration\\calibration--ip--GigahertzOptik--Andor_0.1s_500acc_300lmm_center620nm_200umSlit_450LPF\\calibration--ip--GigahertzOptik--Andor_0.1s_500acc_300lmm_center620nm_200umSlit_450LPF.csv",
+    "creator_type": "script",
+    "creator": "c:\\users\\dreickem\\switchdrive\\work\\python\\my_packages\\fte-analysis-libraries-main\\FTE_analysis_libraries\\PLQY.py"
+}
