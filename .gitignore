@@ -1,5 +1,6 @@
 FTE-analysis-libraries-main
 .ipynb_checkpoints
+.virtual_documents
 old
 PLQY_results
 PLQY_results*[! - template]
