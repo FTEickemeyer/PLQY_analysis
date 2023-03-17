@@ -24,6 +24,7 @@ from FTE_analysis_libraries import PLQY as lqy
 
 # Initializes Thot project
 db = ThotProject( dev_root = r'PLQY_results\PLQY' )
+#db = ThotProject( dev_root = r'PL' )
 root = db.find_container(dict(_id = db.root))
 
 
@@ -35,7 +36,7 @@ asset_type = ''
 container_ids = root.children
 for container_id in container_ids:
     container = db.find_container( { '_id' : container_id} )
-    lqy.raw_to_asset_with_metadata(container, asset_type, db, show_FN = False, show_new_asset = False)
+    lqy.raw_to_asset_with_metadata(container, asset_type, db, show_FN = True, show_new_asset = True)
 
 
 # In[ ]:

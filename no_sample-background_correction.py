@@ -4,7 +4,7 @@
 # # No Sample Background Correction
 # Uses the no sample, sample signal to correct for background signal in sample signals
 
-# In[24]:
+# In[ ]:
 
 
 import os.path as path
@@ -21,19 +21,19 @@ import bric_analysis_libraries.plot as plot
 import bric_analysis_libraries.standard_functions as stdfn
 
 
-# In[2]:
+# In[ ]:
 
 
 plot.set_plot_defaults()
 
 
-# In[3]:
+# In[ ]:
 
 
 db = thot.ThotProject( dev_root = '../s9/PLQY' )
 
 
-# In[4]:
+# In[ ]:
 
 
 # seperate assets
@@ -47,7 +47,7 @@ samples = thot.filter( { 'metadata.em_filter': em_filter }, assets )
 samples = list( filter( lambda asset: asset not in no_samples, samples ) )
 
 
-# In[5]:
+# In[ ]:
 
 
 # group samples
@@ -59,7 +59,7 @@ for name in names:
 
 # ### import group data
 
-# In[6]:
+# In[ ]:
 
 
 def import_asset_spectra( asset, name ):
@@ -71,7 +71,7 @@ def import_asset_spectra( asset, name ):
     )
 
 
-# In[7]:
+# In[ ]:
 
 
 ndf = import_asset_spectra( no_sample, 'no' )
@@ -99,7 +99,7 @@ for gname, group in groups.items():
 df = pd.concat( df, axis = 1 ).sort_index( axis = 1 )
 
 
-# In[8]:
+# In[ ]:
 
 
 df.head()
@@ -107,7 +107,7 @@ df.head()
 
 # ### remove outliers
 
-# In[9]:
+# In[ ]:
 
 
 outlier_threshold = 3
@@ -117,7 +117,7 @@ cdf = df[ ( np.abs( zscore( df ) ) < outlier_threshold ) ]
 
 # ### smooth curves
 
-# In[10]:
+# In[ ]:
 
 
 sdf = stdfn.resample( cdf, 'samples', cdf.shape[ 0 ] )
@@ -143,7 +143,7 @@ if db.dev_mode():
     fig.tight_layout()
 
 
-# In[11]:
+# In[ ]:
 
 
 window = 0.05  # window size percent
@@ -189,7 +189,7 @@ for gname in groups.keys():
 # 
 # in beam and out beam scale on low energy side of free space.
 
-# In[12]:
+# In[ ]:
 
 
 def scale_fit( df, target ):
@@ -219,7 +219,7 @@ def scale_fit( df, target ):
     return ( fit.x, fit )
 
 
-# In[13]:
+# In[ ]:
 
 
 odf = df.xs( 'out', level = 'spectra', axis = 1 )
@@ -238,7 +238,7 @@ ns_peak = sndf.idxmax()[ 'no' ]
 ndf_scale = ndf[ ndf.index < ns_peak ]
 
 
-# In[14]:
+# In[ ]:
 
 
 scales = pd.DataFrame()
@@ -260,7 +260,7 @@ scales.index = pd.MultiIndex.from_product(
 scales = scales.sort_index( axis = 1 )
 
 
-# In[19]:
+# In[ ]:
 
 
 if db.dev_mode():
@@ -287,7 +287,7 @@ if db.dev_mode():
 
 # ### correct signal
 
-# In[20]:
+# In[ ]:
 
 
 corr = []
@@ -313,7 +313,7 @@ for gname in groups.keys():
 corr = pd.concat( corr, axis = 1 ).sort_index( axis = 1 )
 
 
-# In[21]:
+# In[ ]:
 
 
 for gname in groups.keys():
@@ -353,7 +353,7 @@ for gname in groups.keys():
     plt.close()
 
 
-# In[22]:
+# In[ ]:
 
 
 def corrected_asset( asset ):
@@ -372,7 +372,7 @@ def corrected_asset( asset ):
     return c_asset
 
 
-# In[25]:
+# In[ ]:
 
 
 # export assets

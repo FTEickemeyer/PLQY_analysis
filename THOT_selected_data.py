@@ -14,7 +14,6 @@ import os
 
 import pandas as pd
 import shutil
-import thot
 from thot import ThotProject
 
 from FTE_analysis_libraries import General as gen
@@ -26,17 +25,19 @@ from FTE_analysis_libraries import Spectrum as spc
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = r'PLQY_results' )
+db = ThotProject(dev_root=r'PLQY_results')
 
 
 # In[ ]:
 
 
 samples = db.find_assets({'type': 'absolute PL spectrum'})
+sample_strlen = int(max([len(samples[idx].name.split('_absolute')[0]) for idx in range(len(samples))]))
 for idx, sample in enumerate(samples):
     A = sample.metadata["A"]
-    PLQY = sample.metadata["PLQY"]    
-    print(f'{idx:2}: {sample.name.split("_absolute")[0]:22}, A = {A:.1e}, PLQY = {PLQY:.1e}')    
+    PLQY = sample.metadata["PLQY"]
+    s_name = samples[idx].name.split('_absolute')[0]
+    print(f'{idx:2}: {s_name.ljust(sample_strlen+1)}: A = {A:.1e}, PLQY = {PLQY:.1e}')
 
 
 # # Select samples
@@ -44,16 +45,20 @@ for idx, sample in enumerate(samples):
 # In[ ]:
 
 
-samples = db.find_assets({'type' : 'absolute PL spectrum'})
+samples = db.find_assets({'type': 'absolute PL spectrum'})
 
-selection_type = 'without and with TPA'
-selection = [0, 1, 5, 2, 3, 4]
+selection_type = 'higher bg perovskite'
+#selection = [2, 3, 6, 18, 11, 12] # 'humidity variation'
+#selection = [6, 18, 4, 5] # 'solution ageing (4 h)'
+#selection = [6, 18, 9, 10] # 'dry air flow rate'
+#selection = [6, 18, 7, 8] # 'spin-coating inside/outside, annealing inside'
+selection = [6, 18, 15, 16] # 'higher bg perovskite'
 
 samples = [samples[selection[idx]] for idx in range(len(selection))]
 sa = []
 for idx, sample in enumerate(samples):
-    #sample.file = sample.file+'.csv' #only for Shuai samples, delete later
-    sa.append(spc.PEL_spectrum.load(sample.file, take_quants_and_units_from_file = True))
+    # sample.file = sample.file+'.csv' #only for Shuai samples, delete later
+    sa.append(spc.PEL_spectrum.load(sample.file, take_quants_and_units_from_file=True))
     print(f'{idx:2}: {sample.name}')
 
 
@@ -98,25 +103,33 @@ if change_plotstyle:
 change_plotstyle = True
 if change_plotstyle:
     for idx, sp in enumerate(allPL.sa):
-        if idx < 3:
-            sp.plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
-        elif idx < 12:
-            sp.plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
-        elif idx < 18:
-            sp.plotstyle = dict(color = gen.colors[2], linewidth = 5, linestyle = '-')            
+        if idx < 2:
+            sp.plotstyle = dict(color=gen.colors[0], linewidth=5, linestyle='-')
+        elif idx < 4:
+            sp.plotstyle = dict(color=gen.colors[1], linewidth=5, linestyle='-')
+        elif idx < 6:
+            sp.plotstyle = dict(color=gen.colors[2], linewidth=5, linestyle='-')
         else:
-            sp.plotstyle = dict(color = gen.colors[3], linewidth = 5, linestyle = '-')            
+            sp.plotstyle = dict(color=gen.colors[3], linewidth=5, linestyle='-')
     change_plotstyle = False
 
 
-#allPL.label(['s1', 's2', 's3', 's4', 's6'])
+# allPL.label(['s1', 's2', 's3', 's4', 's6'])
 allPL.label(new_labels)
 FN_lin = selection_type.replace(' ', '_') + '_linear.png'
-all_graph = allPL.plot(bottom = 0, plotstyle = 'individual', figsize = (8, 6), return_fig = True, show_plot = False, title = selection_type)
+all_graph = allPL.plot(bottom=0, plotstyle='individual', figsize=(8, 6),
+                       return_fig=True, show_plot=False, title=selection_type)
 lqy.add_graph(db, FN_lin, all_graph)
 
 FN_log = selection_type.replace(' ', '_') + '_semilog.png'
-all_graph_log = allPL.plot(yscale = 'log', bottom = 1e15, divisor = 1e3, plotstyle = 'individual', figsize = (8, 6), return_fig = True, show_plot = False, title = selection_type)
+all_graph_log = allPL.plot(yscale='log',
+                           bottom=1e15,
+                           divisor=1e3,
+                           plotstyle='individual',
+                           figsize=(8, 6),
+                           return_fig=True,
+                           show_plot=False,
+                           title=selection_type)
 lqy.add_graph(db, FN_log, all_graph_log)
 
 

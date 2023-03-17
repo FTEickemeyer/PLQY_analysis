@@ -7,7 +7,7 @@
 # 
 # Calibration of raw data.
 
-# In[1]:
+# In[ ]:
 
 
 import re
@@ -17,6 +17,7 @@ from thot import ThotProject
 from os import getcwd, listdir
 import matplotlib.pyplot as plt
 
+from FTE_analysis_libraries import General as gen
 from FTE_analysis_libraries import PLQY as lqy
 from FTE_analysis_libraries import Spectrum as spc
 
@@ -25,14 +26,15 @@ system_dir = pkg_resources.resource_filename('FTE_analysis_libraries', 'System_d
 cal_lamp_dir = pkg_resources.resource_filename('FTE_analysis_libraries', 'System_data/Calibration_lamp_spectra')
 
 
-# In[2]:
+# In[ ]:
 
 
 # Initializes Thot project
 db = ThotProject( dev_root = r'PLQY_results\PLQY' )
+#db = ThotProject( dev_root = r'PL' )
 
 
-# In[3]:
+# In[ ]:
 
 
 #File extension for raw data
@@ -44,7 +46,7 @@ lamp_spec_FN = 'caldata-BN-LH250-V01_sn51102-LH250_snL2229-200805.txt'
 hole_diameter = 3e-3 #m
 
 
-# In[4]:
+# In[ ]:
 
 
 # Load lamp calibration file
@@ -59,7 +61,7 @@ lampspec = lampspec_irr.irradiance_to_photonflux()
 # lqy.add_graph(db, 'lampspec.png', lampspec_graph)
 
 
-# In[7]:
+# In[ ]:
 
 
 # Load measured calibration spectra
@@ -90,7 +92,7 @@ calib.all_values_greater_min(min = 1e-1)
 # lqy.add_graph(db, 'calibration_spectra.png', calibspec_graph)
 
 
-# In[9]:
+# In[ ]:
 
 
 # Calculate calibration function. This function is multiplied with all cps data to yield photon flux
@@ -101,7 +103,7 @@ calibfn.names_to_label('.csv')
 # lqy.add_graph(db, 'calibration_function.png', calibfn_graph)
 
 
-# In[7]:
+# In[ ]:
 
 
 # Plot single calibration function
@@ -112,7 +114,7 @@ if do_this_step1:
     calibfn.sa[idx].plot(yscale = 'log', bottom = 8e8, top = 10e10)
 
 
-# In[8]:
+# In[ ]:
 
 
 # Savgol filter for selected calibration function (700 LP free space)
@@ -129,7 +131,7 @@ if do_this_step2:
         calibfn.sa[idx] = calibfn_new
 
 
-# In[9]:
+# In[ ]:
 
 
 # Load all PL raw spectra
@@ -153,7 +155,7 @@ rawPLspectra.names_to_label('.' + file_ext)
 #rawPLspectra.plot(yscale = 'log',figsize = (20,20), divisor = 1e7, showindex = True)    
 
 
-# In[10]:
+# In[ ]:
 
 
 # Plot single raw spectrum
@@ -165,7 +167,7 @@ if do_this_step3:
 
 # Calibrate
 
-# In[15]:
+# In[ ]:
 
 
 # Calibrate PL spectra
@@ -179,7 +181,7 @@ PLspectra_nm.names_to_label(split_ch = '.' + file_ext)
 
 # Create new asset
 
-# In[16]:
+# In[ ]:
 
 
 for idx, sp in enumerate(PLspectra_nm.sa):
@@ -206,36 +208,65 @@ if not db.dev_mode():
 
 # # Supplemental code
 
-# In[11]:
+# In[ ]:
 
 
 #Plot all data normalized within [left, right]
-do_this = False
+do_this = True
 if do_this:
-    left = PL_signal_left
-    right = PL_signal_right
+    left = 700
+    right = 900
 
-    spa2 = PLspectra_nm.copy()
-    spa2.names_to_label()
-    for idx, sp in enumerate(spa2.sa):
-        r = range(findind(sp.x, left), findind(sp.x, right))
-        print(f'{sp.name}: max = {max(sp.y[r]):.1e}')
-        sp.normalize(x_lim = [left, right])
-        m = 1
+    spa_norm = PLspectra_nm.copy()
+    spa_norm.names_to_label()
+    for idx, sp in enumerate(spa_norm):
+        if 'fs' in sp.name.split('--')[1]:
+            sp.normalize(x_lim = [left, right])
 
-    #spa2.plot(yscale = 'log', title = 'Relative spectral photon flux', left = left, right = right, bottom = m*1e-2, top = m*1.1, figsize = (30, 20), nolabel = False)
+    spa_norm.plot(yscale='linear',
+                  left=left,
+                  right=right,
+                  bottom=0,
+                  title='Relative spectral photon flux',
+                  showindex=True,
+                  figsize=(20, 10),
+                  in_name=['fs'])
 
 
 # In[ ]:
 
 
-PLspectra_nm.plot(yscale = 'linear', left = 700, bottom = 0, title = 'Relative spectral photon flux', showindex = True, figsize = (20, 10), in_name = ['fs'])
+PLspectra_nm.plot(yscale='linear',
+                  left=450,
+                  bottom=0,
+                  title='Relative spectral photon flux',
+                  showindex=True,
+                  figsize=(20, 10),
+                  in_name=['fs'])
 
 
 # In[ ]:
 
 
-rawPLspectra.plot(yscale = 'linear', left = 700, bottom = 0, title = 'Relative spectral photon flux', showindex = True, figsize = (20, 10), in_name = ['fs'])
+# Save all data in exchange folder
+
+if False:
+    exch_dir = os.path.join(db.root, 'exchange')
+
+    try:
+        os.makedirs(exch_dir, exist_ok = True)
+    except OSError as error:
+        print("Directory '%s' can not be created" % exch_dir)
+
+    import shutil
+
+    # PL spectra
+    samples = db.find_assets({'type': 'calibrated PL spectrum'})
+    for idx, sample in enumerate(samples):
+        src = sample.file
+        FN = os.path.basename(sample.file)
+        dst =  os.path.join(exch_dir, FN)
+        shutil.copyfile(src, dst)
 
 
 # In[ ]:

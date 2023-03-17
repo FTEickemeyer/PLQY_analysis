@@ -11,11 +11,11 @@
 
 
 import os
-from os import getcwd, listdir
+
 import pandas as pd
 import thot
 from thot import ThotProject
-from importlib import reload
+#from importlib import reload
 
 from FTE_analysis_libraries import General as gen
 from FTE_analysis_libraries import PLQY as lqy
@@ -26,17 +26,19 @@ from FTE_analysis_libraries import Spectrum as spc
 
 
 # Initializes Thot project
-db = ThotProject( dev_root = r'PLQY_results' )
+db = ThotProject(dev_root=r'PLQY_results')
 
 
 # In[ ]:
 
 
 samples = db.find_assets({'type': 'absolute PL spectrum'})
+sample_strlen = int(max([len(samples[idx].name.split('_absolute')[0]) for idx in range(len(samples))]))
 for idx, sample in enumerate(samples):
     A = sample.metadata["A"]
-    PLQY = sample.metadata["PLQY"]    
-    print(f'{idx:2}: {sample.name.split("_absolute")[0]:22}, A = {A:.1e}, PLQY = {PLQY:.1e}')    
+    PLQY = sample.metadata["PLQY"]
+    s_name = samples[idx].name.split('_absolute')[0]
+    print(f'{idx:2}: {s_name.ljust(sample_strlen+1)}: A = {A:.1e}, PLQY = {PLQY:.1e}')
 
 
 # In[ ]:
@@ -47,11 +49,9 @@ do_this_step = False
 
 if do_this_step or ( not db.dev_mode() ):
     samples = db.find_assets({'type' : 'absolute PL spectrum'})
-    #Shuai
-    #order = [i for i in range(6, 20)]
-    #Lin
-    order = [0, 1, 5, 2, 3, 4] # without and with TPA
-    
+    #order = [i for i, sample in enumerate(samples) if ('glass' in sample.name)]
+    order = [1, 2, 3, 4, 5, 6, 7]
+
     samples_new = [samples[order[idx]] for idx in range(len(order))]
     for idx, sample in enumerate(samples_new):
         print(f'{idx:2}: {sample.name}')
@@ -90,49 +90,76 @@ for idx in range(len(samples)):
     s_name = samples[idx].name.split('_absolute')[0]
     new_labels.append(s_name)
     PF = allPL.sa[idx].photonflux(start = 700, stop = 900)
-    print(f'{s_name.ljust(sample_strlen+1)}: A = {A:.1e}, PLQY = {PLQY:.1e}, PF = {PF:.1e} 1/(s m2)')
+    print(f'{idx:2}: {s_name.ljust(sample_strlen+1)}: A = {A:.1e}, PLQY = {PLQY:.1e}, PF = {PF:.1e} 1/(s m2)')
 
-change_plotstyle = False
-if change_plotstyle:
-    allPL.sa[0].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
-    allPL.sa[1].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
-    allPL.sa[2].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
-    allPL.sa[3].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
-    allPL.sa[4].plotstyle = dict(color = gen.colors[2], linewidth = 5, linestyle = '-')
-    allPL.sa[5].plotstyle = dict(color = gen.colors[3], linewidth = 5, linestyle = '-')
-    #allPL.sa[6].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
-    #allPL.sa[7].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
-    #allPL.sa[8].plotstyle = dict(color = gen.colors[2], linewidth = 5, linestyle = '-')
-    #allPL.sa[9].plotstyle = dict(color = gen.colors[2], linewidth = 5, linestyle = '-')
-    #allPL.sa[10].plotstyle = dict(color = gen.colors[2], linewidth = 5, linestyle = '-')
-    #allPL.sa[11].plotstyle = dict(color = gen.colors[2], linewidth = 5, linestyle = '-')
-    #allPL.sa[12].plotstyle = dict(color = gen.colors[3], linewidth = 5, linestyle = '-')
-    #allPL.sa[13].plotstyle = dict(color = gen.colors[3], linewidth = 5, linestyle = '-')
-    #allPL.sa[14].plotstyle = dict(color = gen.colors[3], linewidth = 5, linestyle = '-')
-    change_plotstyle = False
-    
-change_plotstyle = True
-if change_plotstyle:
+if True:
     for idx, sp in enumerate(allPL.sa):
-        if idx < 3:
-            sp.plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
-        elif idx < 12:
-            sp.plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
-        elif idx < 18:
-            sp.plotstyle = dict(color = gen.colors[2], linewidth = 5, linestyle = '-')            
+        #sp.plotstyle = dict(color = gen.colors[idx], linewidth = 5, linestyle = '-')
+        sp.plotstyle = dict(color = gen.colors[int(idx/3)], linewidth = 5, linestyle = '-')
+
+if False:
+    allPL.sa[0].plotstyle = dict(color = gen.colors[0], linewidth = 5, linestyle = '-')
+    allPL.sa[1].plotstyle = dict(color = gen.colors[1], linewidth = 5, linestyle = '-')
+    allPL.sa[2].plotstyle = dict(color = gen.colors[2], linewidth = 5, linestyle = '-')
+    #allPL.sa[3].plotstyle = dict(color = gen.colors[2], linewidth = 5, linestyle = '-')
+    #allPL.sa[4].plotstyle = dict(color = gen.colors[2], linewidth = 5, linestyle = '-')
+    #allPL.sa[5].plotstyle = dict(color = gen.colors[3], linewidth = 5, linestyle = '-')
+    #allPL.sa[6].plotstyle = dict(color = gen.colors[3], linewidth = 5, linestyle = '-')
+    #allPL.sa[7].plotstyle = dict(color = gen.colors[4], linewidth = 5, linestyle = '-')
+    #allPL.sa[8].plotstyle = dict(color = gen.colors[4], linewidth = 5, linestyle = '-')
+    #allPL.sa[9].plotstyle = dict(color = gen.colors[5], linewidth = 5, linestyle = '-')
+    #allPL.sa[10].plotstyle = dict(color = gen.colors[5], linewidth = 5, linestyle = '-')
+    #allPL.sa[11].plotstyle = dict(color = gen.colors[6], linewidth = 5, linestyle = '-')
+    #allPL.sa[12].plotstyle = dict(color = gen.colors[6], linewidth = 5, linestyle = '-')
+    #allPL.sa[13].plotstyle = dict(color = gen.colors[5], linewidth = 5, linestyle = '-')
+    #allPL.sa[14].plotstyle = dict(color = gen.colors[3], linewidth = 5, linestyle = '-')
+
+if False:
+    colors = gen.colors
+    #colors = gen.CSS_colors
+    #col_names = gen.CSS_col_names ... color=colors[col_names[idx]]
+
+    for idx, sp in enumerate(allPL):
+        if idx < 5:
+            sp.plotstyle = dict(color=colors[0], linewidth = 5, linestyle = '-')
+        elif idx < 11:
+            sp.plotstyle = dict(color=colors[1], linewidth = 5, linestyle = '-')
+        elif idx < 15:
+            sp.plotstyle = dict(color=colors[2], linewidth = 5, linestyle = '-')
+        elif idx < 15:
+            sp.plotstyle = dict(color=colors[3], linewidth = 5, linestyle = '-')
+        elif idx < 20:
+            sp.plotstyle = dict(color=colors[2], linewidth = 5, linestyle = '-')
+
         else:
-            sp.plotstyle = dict(color = gen.colors[3], linewidth = 5, linestyle = '-')            
-    change_plotstyle = False
+            sp.plotstyle = dict(color=colors[5], linewidth = 5, linestyle = '-')
 
 
 #allPL.label(['s1', 's2', 's3', 's4', 's6'])
 allPL.label(new_labels)
-all_graph = allPL.plot(bottom = 0, plotstyle = 'individual', figsize = (8, 6), return_fig = True, show_plot = False)
+all_graph = allPL.plot(bottom = 0, plotstyle = 'individual', figsize = (12, 8), return_fig = True, show_plot = False)
 FN_lin = 'all_absolute_PL_spectra_linear.png'
 lqy.add_graph(db, FN_lin, all_graph)
-all_graph_log = allPL.plot(yscale = 'log', bottom = 1e15, divisor = 1e3, plotstyle = 'individual', figsize = (8, 6), return_fig = True, show_plot = False)
+all_graph_log = allPL.plot(yscale = 'log', bottom = 1e15, divisor = 1e3, plotstyle = 'individual', figsize = (12, 8), return_fig = True, show_plot = False)
 FN_log = 'all_absolute_PL_spectra_semilog.png'
 lqy.add_graph(db, FN_log, all_graph_log)
+
+
+# In[ ]:
+
+
+#plot normalized
+if False:
+    allPL_norm = allPL.copy()
+    allPL_norm.normalize()
+    allPL_norm.qy_uy('Spectral photon flux', 'norm.')
+    spAu = allPL_norm.sa[0]
+    spno = allPL_norm.sa[5]
+    both = spc.PEL_spectra([spno*1.2, spAu])
+    both.label(['no Au', 'Au'])
+    both.plot(yscale='linear', hline=0)
+    #allPL_norm.plot(yscale='linear', plotstyle='individual')
+    #allPL_norm.plot(yscale='log', plotstyle='individual')
 
 
 # In[ ]:
@@ -172,17 +199,26 @@ do_this_step = True
 
 if do_this_step:
 
-    df = pd.DataFrame({'Sample' : names, 'A' : A_arr, 'PLQY' : PLQY_arr, 'PL_peak (nm)' : peak_arr, 'Eg (eV)' : Eg_arr, 'Vsq (V)' : Vsq_arr, 'delta V (V)': dV_arr, 'QFLS/q (V)' : QFLS_arr, 'fs-inb adjustment factor' : adj_fac_arr, 'fs-absolute intensity factor' : fs_absint_fac_arr})
+    df = pd.DataFrame({'Sample': names,
+                       'A': A_arr,
+                       'PLQY': PLQY_arr,
+                       'PL_peak (nm)': peak_arr,
+                       'Eg (eV)': Eg_arr,
+                       'Vsq (V)': Vsq_arr,
+                       'delta V (V)': dV_arr,
+                       'QFLS/q (V)': QFLS_arr,
+                       'fs-inb adjustment factor': adj_fac_arr,
+                       'fs-absolute intensity factor': fs_absint_fac_arr})
 
     directory = os.path.dirname(samples[0].file) 
     FN = 'PLQY.csv'
-    #if save_ok(join(directory, FN)):
-    #    df.to_csv(join(directory, FN), header = True, index = False)
-        
-    csv_asset_prop = dict(name = 'csv_'+FN, type = 'csv', file = FN)
+    # if save_ok(join(directory, FN)):
+    # df.to_csv(join(directory, FN), header = True, index = False)
+
+    csv_asset_prop = dict(name='csv_'+FN, type='csv', file=FN)
     csv_asset_filepath = db.add_asset(csv_asset_prop)
-    df.to_csv(csv_asset_filepath, header = True, index = False)
-    
+    df.to_csv(csv_asset_filepath, header=True, index=False)
+
     do_this_step = False
 
 
@@ -192,36 +228,35 @@ if do_this_step:
 # Save PLQY data to formatted excel worksheet
 
 if True:
-    
+
     FN = 'PLQY.xlsx'
-    xlsx_asset_prop = dict(name = 'xlsx_'+FN, type = 'xlsx', file = FN)
+    xlsx_asset_prop = dict(name='xlsx_'+FN, type='xlsx', file=FN)
     xlsx_asset_filepath = db.add_asset(xlsx_asset_prop)
 
     writer = pd.ExcelWriter(xlsx_asset_filepath, engine='xlsxwriter')
     df_xlsx = df.copy()
-    df_xlsx = df_xlsx.drop( labels = 'fs-inb adjustment factor', axis = 1)
-    df_xlsx = df_xlsx.drop( labels = 'fs-absolute intensity factor', axis = 1)
-    df_xlsx.to_excel(writer, index=False, header = True, sheet_name='PLQY report')
+    df_xlsx = df_xlsx.drop(labels='fs-inb adjustment factor', axis=1)
+    df_xlsx = df_xlsx.drop(labels='fs-absolute intensity factor', axis=1)
+    df_xlsx.to_excel(writer, index=False, header=True, sheet_name='PLQY report')
 
     workbook = writer.book
     worksheet = writer.sheets['PLQY report']
-    
+
     # Add cell formats.
-    
+
     fmt_text = workbook.add_format(
-        {
-        'bold': True,
-        'text_wrap': True,
-        'align': 'left'
-        #'valign': 'center'
-        #'fg_color': '#5DADE2',
-        #'font_color': '#FFFFFF',
-        #'border': 1
+        {'bold': True,
+         'text_wrap': True,
+         'align': 'left'
+         # 'valign': 'center'
+         # 'fg_color': '#5DADE2',
+         # 'font_color': '#FFFFFF',
+         # 'border': 1
         })
     fmt_percent = workbook.add_format({'num_format': '0.0%',
                                        'align': 'center'
-                                       #'bold': True
-                                       #, 'bg_color': '#FFC7CE'
+                                       # 'bold': True
+                                       # , 'bg_color': '#FFC7CE'
                                        })
     fmt_PLQY = workbook.add_format({'num_format': '0.00E+00',
                                     'align': 'center'})
@@ -231,21 +266,21 @@ if True:
                                  'align': 'center'})
 
     # Set the column width and format.
-    worksheet.set_column(0, 0, sample_strlen+1, fmt_text)
+    worksheet.set_column(0, 0, sample_strlen+3, fmt_text)
     worksheet.set_column(1, 1, 10, fmt_percent)
     worksheet.set_column(2, 2, 10, fmt_PLQY)
     worksheet.set_column(3, 3, 13, fmt_PLpeak)
     worksheet.set_column(4, 7, 10, fmt_V)
-    
 
     # Close the Pandas Excel writer and output the Excel file.
-    writer.save()
+    #writer.save()
+    writer.close()
 
 
 # In[ ]:
 
 
-#Save all data in exchange folder
+# Save all data in exchange folder
 exch_dir = os.path.join(db.root, 'exchange')
 
 try:
@@ -273,7 +308,6 @@ for idx, sample in enumerate(samples):
     FN = os.path.basename(sample.file)
     dst =  os.path.join(exch_dir, FN)
     shutil.copyfile(src, dst)
-    
 
 
 # In[ ]:
